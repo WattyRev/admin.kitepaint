@@ -6,17 +6,13 @@ app.config(function($stateProvider, $urlRouterProvider) {
 
     // Store some domain references based on environment
     var currentDomain = window.location.hostname;
-    var staticDomains = {
-        "beta.kitepaint.com": "https://static.beta.kitepaint.com/",
-        "kitepaint.com": "https://static.kitepaint.com/",
-        default: ""
-    };
     var apiDomains = {
-        "beta.kitepaint.com": "https://api.beta.kitepaint.com/php/",
-        "kitepaint.com": "https://api.kitepaint.com/php/",
+        "admin.beta.kitepaint.com": "https://api.beta.kitepaint.com/php/admin/",
+        "beta.kitepaint.com": "https://api.beta.kitepaint.com/php/admin/",
+        "admin.kitepaint.com": "https://api.kitepaint.com/php/admin/",
+        "kitepaint.com": "https://api.kitepaint.com/php/admin/",
         default: ""
     };
-    app.staticDomain = staticDomains[currentDomain] || staticDomains.default;
     app.apiDomain = apiDomains[currentDomain] || apiDomains.default;
 
     $stateProvider
