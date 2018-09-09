@@ -39,7 +39,7 @@ app.controller("DesignsController", [
             };
             $.ajax({
                 type: "GET",
-                url: "php/designs.php",
+                url: app.apiDomain + "designs.php",
                 data: content,
                 dataType: "json",
                 success: function(data) {
@@ -148,7 +148,7 @@ app.controller("DesignsController", [
         scope.save_design = function(design) {
             $.ajax({
                 type: "POST",
-                url: "php/designs.php",
+                url: app.apiDomain + "designs.php",
                 data: design,
                 dataType: "json",
                 success: function(data) {
@@ -172,7 +172,7 @@ app.controller("DesignsController", [
             if (confirmed) {
                 $.ajax({
                     type: "POST",
-                    url: "php/designs.php",
+                    url: app.apiDomain + "designs.php",
                     data: { id: design.id, delete: true },
                     dataType: "json",
                     success: function(data) {
