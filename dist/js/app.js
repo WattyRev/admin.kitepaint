@@ -39,7 +39,7 @@ app.config(function($stateProvider, $urlRouterProvider) {
     // Hit the Ping API to confirm authentication
     $.ajax({
         type: "GET",
-        url: app.apiDOmain + "ping.php"
+        url: app.apiDomain + "ping.php"
     });
 
     $stateProvider
