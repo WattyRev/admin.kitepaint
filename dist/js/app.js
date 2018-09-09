@@ -15,6 +15,33 @@ app.config(function($stateProvider, $urlRouterProvider) {
     };
     app.apiDomain = apiDomains[currentDomain] || apiDomains.default;
 
+    // Override AJAX to redirect on 401
+    var originalAjax = $.ajax;
+    $.ajax = function(config) {
+        var loginUrls = {
+            "admin.beta.kitepaint.com": "https://beta.kitepaint.com/login.php",
+            "beta.kitepaint.com": "https://beta.kitepaint.com/login.php",
+            "admin.kitepaint.com": "https://kitepaint.com/login.php",
+            "kitepaint.com": "https://kitepaint.com/login.php",
+            default: ""
+        };
+        var loginUrl = loginUrls[currentDomain] || loginUrls.default;
+        var originalHandler = config.error;
+        config.error = function(data) {
+            if (data.status === 401) {
+                window.location.replace(loginUrl);
+            }
+            return originalHandler(data);
+        };
+        return originalAjax(config);
+    };
+
+    // Hit the Ping API to confirm authentication
+    $.ajax({
+        type: "GET",
+        url: app.apiDOmain + "ping.php"
+    });
+
     $stateProvider
         .state("designs", {
             url: "/designs",
