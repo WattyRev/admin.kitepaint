@@ -19,10 +19,13 @@ app.config(function($stateProvider, $urlRouterProvider) {
     var originalAjax = $.ajax;
     $.ajax = function(config) {
         var loginUrls = {
-            "admin.beta.kitepaint.com": "https://beta.kitepaint.com/login.php",
-            "beta.kitepaint.com": "https://beta.kitepaint.com/login.php",
-            "admin.kitepaint.com": "https://kitepaint.com/login.php",
-            "kitepaint.com": "https://kitepaint.com/login.php",
+            "admin.beta.kitepaint.com":
+                "https://api.beta.kitepaint.com/php/admin/login.php",
+            "beta.kitepaint.com":
+                "https://api.beta.kitepaint.com/php/admin/login.php",
+            "admin.kitepaint.com":
+                "https://api.kitepaint.com/php/admin/login.php",
+            "kitepaint.com": "https://api.kitepaint.com/php/admin/login.php",
             default: ""
         };
         var loginUrl = loginUrls[currentDomain] || loginUrls.default;
@@ -40,7 +43,7 @@ app.config(function($stateProvider, $urlRouterProvider) {
     };
 
     // Hit the Ping API to confirm authentication
-    $.ajax({
+    const sessionId = $.ajax({
         type: "GET",
         dataType: "json",
         url: app.apiDomain + "ping.php"
