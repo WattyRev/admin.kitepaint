@@ -31,7 +31,7 @@ app.config(function($stateProvider, $urlRouterProvider) {
             if (data.status === 401) {
                 window.location.replace(loginUrl);
             }
-            return originalHandler(data);
+            return originalHandler ? originalHandler(data) : null;
         };
         return originalAjax(config);
     };
@@ -39,6 +39,7 @@ app.config(function($stateProvider, $urlRouterProvider) {
     // Hit the Ping API to confirm authentication
     $.ajax({
         type: "GET",
+        dataType: "json",
         url: app.apiDomain + "ping.php"
     });
 
