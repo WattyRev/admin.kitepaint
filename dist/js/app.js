@@ -46,7 +46,7 @@ app.config(function($stateProvider, $urlRouterProvider) {
     const sessionId = getParameterByName("ssid");
     if (sessionId) {
         const newUrl = window.location.href.split("?")[0] + "#/";
-        window.history.pushState({ path: newurl }, "", newurl);
+        window.history.replaceState({}, "", "#/");
     }
     $.ajax({
         type: "POST",
