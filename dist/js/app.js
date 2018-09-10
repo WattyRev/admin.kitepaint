@@ -45,7 +45,7 @@ app.config(function($stateProvider, $urlRouterProvider) {
     // Hit the Ping API to confirm authentication
     const sessionId = getParameterByName("ssid");
     if (sessionId) {
-        const newUrl = window.location.href.split("?")[0];
+        const newUrl = window.location.href.split("?")[0] + "#/";
         window.history.pushState({ path: newurl }, "", newurl);
     }
     $.ajax({
