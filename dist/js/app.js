@@ -43,12 +43,14 @@ app.config(function($stateProvider, $urlRouterProvider) {
     };
 
     // Hit the Ping API to confirm authentication
-    const sessionId = window.location.href;
+    const sessionId = getParameterByName(ssid);
+    const newUrl = window.location.href.split("?")[0];
+    window.history.pushState({ path: newurl }, "", newurl);
     $.ajax({
         type: "POST",
-        // data: {
-        //     ssid: sessionId
-        // },
+        data: {
+            ssid: sessionId
+        },
         dataType: "json",
         url: app.apiDomain + "ping.php"
     });
@@ -103,3 +105,13 @@ app.config(function($stateProvider, $urlRouterProvider) {
             }
         });
 });
+
+function getParameterByName(name, url) {
+    if (!url) url = window.location.href;
+    name = name.replace(/[\[\]]/g, "\\$&");
+    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+        results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return "";
+    return decodeURIComponent(results[2].replace(/\+/g, " "));
+}
