@@ -44,13 +44,17 @@ app.config(function($stateProvider, $urlRouterProvider) {
 
     // Hit the Ping API to confirm authentication
     const sessionId = getParameterByName("ssid");
-    const newUrl = window.location.href.split("?")[0];
-    window.history.pushState({ path: newurl }, "", newurl);
+    if (sessionId) {
+        const newUrl = window.location.href.split("?")[0];
+        window.history.pushState({ path: newurl }, "", newurl);
+    }
     $.ajax({
         type: "POST",
-        data: {
-            ssid: sessionId
-        },
+        data: sessionId
+            ? {
+                  ssid: sessionId
+              }
+            : undefined,
         dataType: "json",
         url: app.apiDomain + "ping.php"
     });
