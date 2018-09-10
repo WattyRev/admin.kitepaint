@@ -46,9 +46,9 @@ app.config(function($stateProvider, $urlRouterProvider) {
     const sessionId = window.location.href;
     $.ajax({
         type: "POST",
-        data: {
-            ssid: sessionId
-        },
+        // data: {
+        //     ssid: sessionId
+        // },
         dataType: "json",
         url: app.apiDomain + "ping.php"
     });
