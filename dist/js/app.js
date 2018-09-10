@@ -29,7 +29,10 @@ app.config(function($stateProvider, $urlRouterProvider) {
         var originalHandler = config.error;
         config.error = function(data) {
             if (data.status === 401) {
-                window.location.replace(loginUrl);
+                var currentUrl = window.location.href;
+                window.location.replace(
+                    loginUrl + "?returnUrl=" + encodeURI(currentUrl)
+                );
             }
             return originalHandler ? originalHandler(data) : null;
         };
