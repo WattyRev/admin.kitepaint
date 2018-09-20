@@ -49,6 +49,11 @@ app.config(function($stateProvider, $urlRouterProvider) {
             }
             return originalHandler ? originalHandler(data) : null;
         };
+
+        // Add auth token
+        config.headers = Object.assign({}, config.headers || {}, {
+            "Kp-Auth-Token": getCookie("Kp-Auth-Token")
+        });
         return originalAjax(config);
     };
 
@@ -56,9 +61,6 @@ app.config(function($stateProvider, $urlRouterProvider) {
     $.ajax({
         type: "POST",
         dataType: "json",
-        headers: {
-            "Kp-Auth-Token": getCookie("Kp-Auth-Token")
-        },
         url: app.apiDomain + "ping.php"
     });
 
