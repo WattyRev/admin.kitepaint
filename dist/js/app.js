@@ -57,7 +57,7 @@ app.config(function($stateProvider, $urlRouterProvider) {
         type: "POST",
         dataType: "json",
         headers: {
-            "kp-auth-token": getCookie("kp-auth-token")
+            "Kp-Auth-Token": getCookie("Kp-Auth-Token")
         },
         url: app.apiDomain + "ping.php"
     });
