@@ -1,5 +1,15 @@
 var app = angular.module("kitePaintAdmin", ["ui.router"]);
 
+function getCookie(name) {
+    var value = "; " + document.cookie;
+    var parts = value.split("; " + name + "=");
+    if (parts.length == 2)
+        return parts
+            .pop()
+            .split(";")
+            .shift();
+}
+
 app.config(function($stateProvider, $urlRouterProvider) {
     // For any unmatched url, send to /route1
     $urlRouterProvider.otherwise("/");
@@ -46,6 +56,9 @@ app.config(function($stateProvider, $urlRouterProvider) {
     $.ajax({
         type: "POST",
         dataType: "json",
+        headers: {
+            "kp-auth-token": getCookie("kp-auth-token")
+        },
         url: app.apiDomain + "ping.php"
     });
 
