@@ -1,6 +1,7 @@
-![](https://travis-ci.com/WattyRev/admin.kitepaint?branch=master)
+[![Travis CI][travis-badge]][travis]
 
-[View Build](https://travis-ci.com/WattyRev/admin.kitepaint)
+[travis-badge]: https://travis-ci.com/WattyRev/admin.kitepaint?branch=master
+[travis]: https://travis-ci.com/WattyRev/admin.kitepaint
 
 # admin.kitepaint
 
