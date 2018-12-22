@@ -51,7 +51,11 @@
 				<td>{{product.manufacturer}}</td>
 				<td>{{product.created}}</td>
 				<td>{{product.url}}</td>
-				<td>{{product.status === "0" && 'Private'}}{{product.status === "1" && "Unlisted"}}{{product.status === "2" && "Public"}}</td>
+				<td>
+                    {{product.status === "0" ? 'Private' : ''}}
+                    {{product.status === "1" ? "Unlisted" : ''}}
+                    {{product.status === "2" ? "Public" : ''}}
+                </td>
 			</tr>
 		</tbody>
 	</table>
