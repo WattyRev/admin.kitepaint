@@ -44,7 +44,7 @@ app.controller("ProductsController", [
                     "colors",
                     "variations",
                     "url",
-                    "activated",
+                    "status",
                     "notes",
                     "embed"
                 ]
@@ -56,10 +56,6 @@ app.controller("ProductsController", [
                 dataType: "json",
                 success: function(data) {
                     scope.products = data;
-                    $.each(scope.products, function(i, product) {
-                        product.activated =
-                            product.activated === "0" ? false : true;
-                    });
                     scope.filtered_products = data;
                     scope.loading = false;
                     scope.sort_products();
