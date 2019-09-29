@@ -156,7 +156,14 @@ app.controller("ProductsController", [
                 scope.colors = JSON.parse(product.colors);
             }
             if (product.variations) {
-                scope.variations = JSON.parse(product.variations);
+                if (typeof product.variations === 'string') {
+                    // Variations used to be stored as a json string. Check for
+                    // it for backwards compatibility. This can be removed once
+                    // related changes are in production.
+                    scope.variations = JSON.parse(product.variations);
+                } else {
+                    scope.variations = product.variations;
+                }
             }
             if (product.notes) {
                 scope.notes = JSON.parse(product.notes);
