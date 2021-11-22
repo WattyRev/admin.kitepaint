@@ -25,6 +25,7 @@ const Router = ({ before }) => (
 );
 
 Router.propTypes = {
+    /** Content to be rendered before the routes */
     before: PropTypes.node,
 };
 

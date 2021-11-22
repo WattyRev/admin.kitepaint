@@ -20,6 +20,22 @@ app.listen(13390, () => {
 });
 
 // Define routes
-app.get('/', (request, response) => {
+app.get('/api/', (request, response) => {
     response.send('test');
+});
+
+app.get('/api/designs.php', (request, response) => {
+    console.log('received designs.php');
+    response.json([
+        {
+            id: '123',
+            active: '1',
+            created: '01/01/2021',
+            user: '123',
+            status: '0',
+            name: 'Mona Lisa',
+            product: '123',
+            updated: '01/02/2021',
+        },
+    ]);
 });

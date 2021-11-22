@@ -3,12 +3,19 @@ import styled from 'styled-components';
 import { NavLink } from 'react-router-dom';
 import { BlockListItem } from 'react-watty-ui';
 
+/**
+ * A styled wrapper around the navigation to provide background and sizing
+ */
 const Wrapper = styled.aside`
     height: 100vh;
     box-sizing: border-box;
     background: ${({ theme }) => theme.colors.silver};
 `;
 
+/**
+ * An invdividual styled navigation item, provides hover and active state UI
+ * @type {[type]}
+ */
 const Item = styled(BlockListItem)`
     position: relative;
     padding-right: 20px;
@@ -38,6 +45,9 @@ const Item = styled(BlockListItem)`
     }
 `;
 
+/**
+ * The navigation sidebar component. Provides the primary navigation for the app
+ */
 const Navigation = () => (
     <Wrapper>
         <Item as={NavLink} to="/">
