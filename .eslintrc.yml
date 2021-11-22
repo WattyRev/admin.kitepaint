@@ -1,0 +1,9 @@
+extends:
+    - plugin:zillow/recommended
+    - plugin:zillow/jest
+env:
+    browser: true
+rules:
+    no-console: ['error', { allow: ['warn', 'error'] }]
+    prefer-destructuring: 'off'
+    no-param-reassign: 'off'
