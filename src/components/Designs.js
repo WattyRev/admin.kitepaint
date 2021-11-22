@@ -26,7 +26,7 @@ const Designs = () => (
                         </thead>
                         <tbody>
                             {designs.map(design => (
-                                <TableRow>
+                                <TableRow key={design.get('id')}>
                                     <TableCell>{design.get('id')}</TableCell>
                                     <TableCell>{design.get('name')}</TableCell>
                                     <TableCell>{design.get('updated')}</TableCell>
