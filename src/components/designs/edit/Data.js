@@ -10,7 +10,7 @@ const DesignsEditData = ({ children, design, onSubmit }) => {
     async function submit() {
         setIsSubmitting(true);
         try {
-            await api.submitDesign(editedDesign);
+            await api.updateDesign(editedDesign);
         } catch {
             setIsSubmitting(false);
             return;

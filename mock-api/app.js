@@ -1,7 +1,8 @@
 /* eslint-disable zillow/import/no-extraneous-dependencies, no-console */
 const express = require('express');
-const designs = require('./data/designs');
 const multer = require('multer');
+const designs = require('./data/designs');
+const products = require('./data/products');
 
 const upload = multer();
 const app = express();
@@ -51,9 +52,67 @@ app.post('/api/designs.php', (request, response) => {
         });
         return;
     }
+    const now = new Date();
     Object.assign(storedDesign, design, {
         active: design.active === 'true' ? '1' : '0',
+        updated: `${now.getUTCMonth() + 1}/${now.getUTCDate()}/${now.getUTCFullYear()}`,
     });
+    response.json({
+        message: '',
+        valid: true,
+    });
+});
+
+app.get('/api/products.php', (request, response) => {
+    const { query } = request;
+    let relevantProducts = products;
+    if (query.filter) {
+        const filters = Object.entries(query.filter);
+        const searchCriteria = filters[0][0];
+        const searchTerm = filters[0][1];
+        relevantProducts = relevantProducts.filter(product =>
+            product[searchCriteria].includes(searchTerm)
+        );
+    }
+    response.json(relevantProducts);
+});
+
+app.post('/api/products.php', (request, response) => {
+    const product = request.body;
+    const now = new Date();
+    if (product.new) {
+        products.push({
+            id: products.length,
+            created: `${now.getUTCMonth() + 1}/${now.getUTCDate()}/${now.getUTCFullYear()}`,
+            name: product.name,
+            manufacturer: product.manufacturer,
+            colors: JSON.stringify(product.colors),
+            variations: product.variations,
+            url: product.url,
+            status: product.status,
+            notes: JSON.stringify(product.notes),
+            embed: product.embed,
+        });
+    } else {
+        const storedProduct = products.find(_storedProduct => _storedProduct.id === product.id);
+        if (!storedProduct) {
+            response.json({
+                message: 'not found',
+                valid: false,
+            });
+            return;
+        }
+        Object.assign(storedProduct, {
+            name: product.name,
+            manufacturer: product.manufacturer,
+            colors: JSON.stringify(product.colors),
+            variations: product.variations,
+            url: product.url,
+            status: product.status,
+            notes: JSON.stringify(product.notes),
+            embed: product.embed,
+        });
+    }
     response.json({
         message: '',
         valid: true,

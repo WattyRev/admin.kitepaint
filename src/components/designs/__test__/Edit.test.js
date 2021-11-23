@@ -40,20 +40,20 @@ describe('DesignsEdit', () => {
         expect(() => getByTestId('design-form')).toThrow();
     });
     it('calls onClose when the form is successfully submitted', async () => {
-        api.submitDesign.mockResolvedValue();
+        api.updateDesign.mockResolvedValue();
         const { getByText } = renderWithTheme(<DesignsEdit {...defaultProps} />);
         fireEvent.click(getByText('Save'));
         await waitFor(() => expect(defaultProps.onClose).toHaveBeenCalled());
     });
     it('calls onSubmit when the form is successfully submitted', async () => {
-        api.submitDesign.mockResolvedValue();
+        api.updateDesign.mockResolvedValue();
         const { getByText } = renderWithTheme(<DesignsEdit {...defaultProps} />);
         fireEvent.click(getByText('Save'));
         await waitFor(() => expect(defaultProps.onSubmit).toHaveBeenCalled());
     });
     it('does not call onClose when form submission fails', async () => {
         expect.assertions(3);
-        api.submitDesign.mockRejectedValue();
+        api.updateDesign.mockRejectedValue();
         const { getByText } = renderWithTheme(<DesignsEdit {...defaultProps} />);
         fireEvent.click(getByText('Save'));
         await waitFor(() => expect(getByText('Save')).toBeDisabled());
@@ -62,7 +62,7 @@ describe('DesignsEdit', () => {
     });
     it('does not call onSubmit when form submission fails', async () => {
         expect.assertions(3);
-        api.submitDesign.mockRejectedValue();
+        api.updateDesign.mockRejectedValue();
         const { getByText } = renderWithTheme(<DesignsEdit {...defaultProps} />);
         fireEvent.click(getByText('Save'));
         await waitFor(() => expect(getByText('Save')).toBeDisabled());
@@ -71,10 +71,10 @@ describe('DesignsEdit', () => {
     });
     it('prevents multiple submissions', () => {
         expect.assertions(1);
-        api.submitDesign.mockResolvedValue();
+        api.updateDesign.mockResolvedValue();
         const { getByText } = renderWithTheme(<DesignsEdit {...defaultProps} />);
         fireEvent.click(getByText('Save'));
         fireEvent.click(getByText('Save'));
-        expect(api.submitDesign).toHaveBeenCalledTimes(1);
+        expect(api.updateDesign).toHaveBeenCalledTimes(1);
     });
 });

@@ -27,7 +27,7 @@ const DesignsEdit = ({ design, onClose, onSubmit }) => (
                         <ModalClose data-testid="close-modal" onClick={onClose} />
                         <Label>ID</Label>
                         <Input readOnly value={editedDesign.get('id')} />
-                        <Label for="name">Name</Label>
+                        <Label htmlFor="name">Name</Label>
                         <Input
                             id="name"
                             value={editedDesign.get('name')}
@@ -39,7 +39,7 @@ const DesignsEdit = ({ design, onClose, onSubmit }) => (
                         <Input readOnly value={editedDesign.get('updated')} />
                         <Label>Created</Label>
                         <Input readOnly value={editedDesign.get('created')} />
-                        <Label for="status">Status</Label>
+                        <Label htmlFor="status">Status</Label>
                         <Select
                             id="status"
                             value={editedDesign.get('status')}
@@ -53,7 +53,7 @@ const DesignsEdit = ({ design, onClose, onSubmit }) => (
                                 </option>
                             ))}
                         </Select>
-                        <Label for="user">User ID</Label>
+                        <Label htmlFor="user">User ID</Label>
                         <Input
                             id="user"
                             value={editedDesign.get('user')}
@@ -63,7 +63,7 @@ const DesignsEdit = ({ design, onClose, onSubmit }) => (
                         />
                         <Label>Product ID</Label>
                         <Input readOnly value={editedDesign.get('product')} />
-                        <Label for="active">Active</Label>
+                        <Label htmlFor="active">Active</Label>
                         <Select
                             id="active"
                             value={editedDesign.get('active')?.toString() || ''}
