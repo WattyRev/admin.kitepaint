@@ -23,6 +23,7 @@ const Designs = () => (
                 <React.Fragment>
                     <SearchWrapper>
                         <Select
+                            data-testid="search-criteria"
                             value={searchCriteria}
                             onChange={e => search(e.target.value, searchTerm)}
                         >
@@ -33,15 +34,16 @@ const Designs = () => (
                             <option value="product">Product ID</option>
                         </Select>
                         <Input
+                            data-testid="search-term"
                             value={searchTerm}
                             onChange={e => setSearchTerm(e.target.value)}
                             onBlur={e => search(searchCriteria, e.target.value)}
                             placeholder="Search"
                         />
                     </SearchWrapper>
-                    {isLoading && <PageLoader />}
+                    {isLoading && <PageLoader data-testid="loading" />}
                     {!isLoading && (
-                        <Table>
+                        <Table data-testid="data-table">
                             <thead>
                                 <TableRow>
                                     <TableHeading>ID</TableHeading>
@@ -56,7 +58,7 @@ const Designs = () => (
                             </thead>
                             <tbody>
                                 {designs.map(design => (
-                                    <TableRow key={design.get('id')}>
+                                    <TableRow data-testid="design-row" key={design.get('id')}>
                                         <TableCell>{design.get('id')}</TableCell>
                                         <TableCell>{design.get('name')}</TableCell>
                                         <TableCell>{design.get('updated')}</TableCell>

@@ -14,7 +14,7 @@ function App() {
         <ThemeProvider theme={theme}>
             <GlobalStyles />
             <FlexWrapper>
-                <Router before={<Navigation />} />
+                <Router data-testid="router" before={<Navigation />} />
             </FlexWrapper>
         </ThemeProvider>
     );

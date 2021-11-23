@@ -11,12 +11,12 @@ const DesignsData = ({ children }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
-    async function fetchDesigns() {
+    async function fetchDesigns(criteria, term) {
         setIsLoading(true);
         const resolvedDesigns = await api
             .getDesigns({
-                searchCriteria,
-                searchTerm,
+                searchCriteria: criteria || searchCriteria,
+                searchTerm: term || searchTerm,
             })
             .catch(() => {});
         setDesigns(resolvedDesigns);
@@ -26,12 +26,12 @@ const DesignsData = ({ children }) => {
     function search(criteria, term) {
         setSearchCriteria(criteria);
         setSearchTerm(term);
-        return fetchDesigns();
+        return fetchDesigns(criteria, term);
     }
 
     useEffect(() => {
         fetchDesigns();
-    }, []);
+    });
 
     return children({
         designs: designs || [],
