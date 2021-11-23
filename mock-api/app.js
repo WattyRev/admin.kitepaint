@@ -1,6 +1,7 @@
 /* eslint-disable zillow/import/no-extraneous-dependencies, no-console */
 const express = require('express');
 const bodyParser = require('body-parser');
+const designs = require('./data/designs');
 
 const app = express();
 
@@ -25,17 +26,15 @@ app.get('/api/', (request, response) => {
 });
 
 app.get('/api/designs.php', (request, response) => {
-    console.log('received designs.php');
-    response.json([
-        {
-            id: '123',
-            active: '1',
-            created: '01/01/2021',
-            user: '123',
-            status: '0',
-            name: 'Mona Lisa',
-            product: '123',
-            updated: '01/02/2021',
-        },
-    ]);
+    const { query } = request;
+    let relevantDesigns = designs;
+    if (query.filter) {
+        const filters = Object.entries(query.filter);
+        const searchCriteria = filters[0][0];
+        const searchTerm = filters[0][1];
+        relevantDesigns = relevantDesigns.filter(design =>
+            design[searchCriteria].includes(searchTerm)
+        );
+    }
+    response.json(relevantDesigns);
 });

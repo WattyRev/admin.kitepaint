@@ -31,10 +31,13 @@ class KitePaintApi {
      */
     axiosInstance = null;
 
-    async getDesigns() {
-        const response = await this.axiosInstance.get(
-            '/designs.php?limit=100&return=id&return=active&return=created&return=user&return=status&return=name&return=product&return=updated'
-        );
+    async getDesigns({ searchTerm, searchCriteria }) {
+        let path =
+            '/designs.php?limit=100&return=id&return=active&return=created&return=user&return=status&return=name&return=product&return=updated';
+        if (searchTerm && searchCriteria) {
+            path += `&filter[${searchCriteria}]=${searchTerm}`;
+        }
+        const response = await this.axiosInstance.get(path);
         const transformedDesigns = response.data.map(transformDesign);
         return transformedDesigns;
     }
