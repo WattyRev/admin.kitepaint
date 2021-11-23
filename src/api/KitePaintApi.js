@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { error, success } from 'react-watty-ui';
 import env from '../constants/environmentVariables';
 import { transformDesign } from '../models/Design';
 
@@ -37,9 +38,30 @@ class KitePaintApi {
         if (searchTerm && searchCriteria) {
             path += `&filter[${searchCriteria}]=${searchTerm}`;
         }
-        const response = await this.axiosInstance.get(path);
+        const response = await this.axiosInstance.get(path).catch(() => {
+            error('Failed to get designs');
+            return Promise.reject();
+        });
         const transformedDesigns = response.data.map(transformDesign);
         return transformedDesigns;
+    }
+
+    async submitDesign(design) {
+        const path = '/designs.php';
+        let response;
+        try {
+            const bodyFormData = new FormData();
+            const data = design.buildPayload();
+            Object.keys(data).forEach(key => bodyFormData.append(key, data[key]));
+            response = await this.axiosInstance.post(path, bodyFormData);
+            if (!response?.data?.valid) {
+                throw new Error('Request is invalid');
+            }
+        } catch (e) {
+            error('Failed to save design');
+            throw e;
+        }
+        success('Design saved');
     }
 }
 

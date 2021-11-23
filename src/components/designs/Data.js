@@ -31,7 +31,7 @@ const DesignsData = ({ children }) => {
 
     useEffect(() => {
         fetchDesigns();
-    });
+    }, []);
 
     return children({
         designs: designs || [],
@@ -40,6 +40,7 @@ const DesignsData = ({ children }) => {
         setSearchTerm,
         searchCriteria,
         search,
+        refresh: fetchDesigns,
     });
 };
 

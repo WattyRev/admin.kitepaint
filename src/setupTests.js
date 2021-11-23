@@ -1,6 +1,6 @@
 /* eslint-disable zillow/import/no-extraneous-dependencies */
 import { render } from '@testing-library/react';
-import theme from 'react-watty-ui';
+import theme, { setupFontAwesome } from 'react-watty-ui';
 import { ThemeProvider } from 'styled-components';
 import React from 'react';
 
@@ -9,6 +9,8 @@ import React from 'react';
 // expect(element).toHaveTextContent(/react/i)
 // learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom';
+
+setupFontAwesome();
 
 global.renderWithTheme = content => render(<ThemeProvider theme={theme}>{content}</ThemeProvider>);
 

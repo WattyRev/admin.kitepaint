@@ -8,5 +8,6 @@ rules:
     prefer-destructuring: 'off'
     no-param-reassign: 'off'
     zillow/jest/require-tothrow-message: 'off'
+    zillow/react-hooks/exhaustive-deps: 'off'
 globals:
     renderWithTheme: true

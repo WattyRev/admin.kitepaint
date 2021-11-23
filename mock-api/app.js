@@ -1,8 +1,9 @@
 /* eslint-disable zillow/import/no-extraneous-dependencies, no-console */
 const express = require('express');
-const bodyParser = require('body-parser');
 const designs = require('./data/designs');
+const multer = require('multer');
 
+const upload = multer();
 const app = express();
 
 // Set headers for all APIs
@@ -13,7 +14,8 @@ app.use((request, response, next) => {
 
 // Adds the `body` property to `request` so that we can parse content sent in
 // the body of POST requests.
-app.use(bodyParser.json());
+app.use(upload.array());
+app.use(express.static('public'));
 
 // Open the server on port 13390
 app.listen(13390, () => {
@@ -37,4 +39,23 @@ app.get('/api/designs.php', (request, response) => {
         );
     }
     response.json(relevantDesigns);
+});
+
+app.post('/api/designs.php', (request, response) => {
+    const design = request.body;
+    const storedDesign = designs.find(_storedDesign => _storedDesign.id === design.id);
+    if (!storedDesign) {
+        response.json({
+            message: 'not found',
+            valid: false,
+        });
+        return;
+    }
+    Object.assign(storedDesign, design, {
+        active: design.active === 'true' ? '1' : '0',
+    });
+    response.json({
+        message: '',
+        valid: true,
+    });
 });
