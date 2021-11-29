@@ -46,7 +46,7 @@ const ColorsField = ({ colors, onChange }) => {
                 <Flex key={index}>
                     <Button
                         type="button"
-                        onClick={() => onChange(colors.filter((_, _index) => index === _index))}
+                        onClick={() => onChange(colors.filter((_, _index) => index !== _index))}
                     >
                         X
                     </Button>

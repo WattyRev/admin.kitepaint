@@ -1,20 +1,10 @@
 import React, { useState } from 'react';
-import {
-    PageLoader,
-    Table,
-    TableCell,
-    TableHeading,
-    TableRow,
-    H1,
-    Spacer,
-    TextButton,
-    Button,
-} from 'react-watty-ui';
-import ManufacturersEditData from './manufacturers/edit/Data';
+import { PageLoader, Table, TableHeading, TableRow, H1, Spacer, Button } from 'react-watty-ui';
 import PageWrapper from './ui/PageWrapper';
 import ManufacturersData from './manufacturers/Data';
 import ManufacturersEdit from './manufacturers/Edit';
 import ManufacturersCreate from './manufacturers/Create';
+import ManufacturersRow from './manufacturers/Row';
 
 const Manufacturers = () => {
     const [editedManufacturer, setEditedManufacturer] = useState(null);
@@ -52,65 +42,12 @@ const Manufacturers = () => {
                                 </thead>
                                 <tbody>
                                     {manufacturers.map(manufacturer => (
-                                        <TableRow
-                                            data-testid="manufacturer-row"
+                                        <ManufacturersRow
                                             key={manufacturer.get('id')}
-                                        >
-                                            <TableCell>{manufacturer.get('id')}</TableCell>
-                                            <TableCell>{manufacturer.get('name')}</TableCell>
-                                            <TableCell>
-                                                {manufacturer.get('activated') ? 'True' : 'False'}
-                                            </TableCell>
-                                            <TableCell>{manufacturer.get('created')}</TableCell>
-                                            <TableCell>
-                                                {manufacturer.get('contact_name')}
-                                            </TableCell>
-                                            <TableCell>
-                                                {manufacturer.get('contact_phone')}
-                                            </TableCell>
-                                            <TableCell>
-                                                {manufacturer.get('contact_email')}
-                                            </TableCell>
-                                            <TableCell>
-                                                {manufacturer.get('billing_email')}
-                                            </TableCell>
-                                            <TableCell>
-                                                {manufacturer.get('invoice_amount')}
-                                            </TableCell>
-                                            <TableCell>{manufacturer.get('last_paid')}</TableCell>
-                                            <TableCell>{manufacturer.get('logo')}</TableCell>
-                                            <TableCell>{manufacturer.get('website')}</TableCell>
-                                            <TableCell>
-                                                <TextButton
-                                                    onClick={() =>
-                                                        setEditedManufacturer(manufacturer)
-                                                    }
-                                                >
-                                                    Edit
-                                                </TextButton>
-                                            </TableCell>
-                                            <TableCell>
-                                                <ManufacturersEditData
-                                                    manufacturer={manufacturer}
-                                                    onSubmit={refresh}
-                                                >
-                                                    {({ isSubmitting, payInvoice }) => (
-                                                        <TextButton
-                                                            onClick={
-                                                                isSubmitting
-                                                                    ? () => {}
-                                                                    : () => payInvoice()
-                                                            }
-                                                            disabled={isSubmitting}
-                                                        >
-                                                            {isSubmitting
-                                                                ? 'Submitting...'
-                                                                : 'Pay Invoice'}
-                                                        </TextButton>
-                                                    )}
-                                                </ManufacturersEditData>
-                                            </TableCell>
-                                        </TableRow>
+                                            manufacturer={manufacturer}
+                                            onEdit={setEditedManufacturer}
+                                            onSubmit={refresh}
+                                        />
                                     ))}
                                 </tbody>
                             </Table>

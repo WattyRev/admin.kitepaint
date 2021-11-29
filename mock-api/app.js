@@ -89,7 +89,7 @@ app.post('/api/products.php', (request, response) => {
             name: product.name,
             manufacturer: product.manufacturer,
             colors: product.colors,
-            variations: product.variations,
+            variations: JSON.parse(product.variations),
             url: product.url,
             status: product.status,
             notes: product.notes,

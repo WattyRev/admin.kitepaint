@@ -26,9 +26,7 @@ const UsersRow = ({ user, onEdit, onSubmit }) => (
                     >
                         {modalConfirm => (
                             <TextButton
-                                onClick={
-                                    isSubmitting ? () => {} : () => modalConfirm.actions.open()
-                                }
+                                onClick={isSubmitting ? () => {} : modalConfirm.actions.open}
                                 disabled={isSubmitting}
                             >
                                 {isSubmitting ? 'Submitting...' : 'Reset Password'}

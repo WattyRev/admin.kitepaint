@@ -11,7 +11,7 @@ const Product = createModel('Product', {
     manufacturer: '',
     name: '',
     notes: [],
-    status: null,
+    status: 'Private',
     url: '',
     variations: [],
 
