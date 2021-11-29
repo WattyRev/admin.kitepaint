@@ -18,7 +18,19 @@ const ManufacturersEditData = ({ children, manufacturer, onSubmit }) => {
         onSubmit();
     }
 
+    async function payInvoice() {
+        setIsSubmitting(true);
+        try {
+            await api.payManufacturerInvoice(manufacturer);
+        } catch {
+            setIsSubmitting(false);
+            return;
+        }
+        onSubmit();
+    }
+
     return children({
+        payInvoice,
         editedManufacturer,
         setEditedManufacturer,
         submit,

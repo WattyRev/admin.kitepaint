@@ -10,6 +10,7 @@ import {
     TextButton,
     Button,
 } from 'react-watty-ui';
+import ManufacturersEditData from './manufacturers/edit/Data';
 import PageWrapper from './ui/PageWrapper';
 import ManufacturersData from './manufacturers/Data';
 import ManufacturersEdit from './manufacturers/Edit';
@@ -45,6 +46,7 @@ const Manufacturers = () => {
                                         <TableHeading>Last Paid</TableHeading>
                                         <TableHeading>Logo</TableHeading>
                                         <TableHeading>Website</TableHeading>
+                                        <TableHeading />
                                         <TableHeading />
                                     </TableRow>
                                 </thead>
@@ -86,6 +88,27 @@ const Manufacturers = () => {
                                                 >
                                                     Edit
                                                 </TextButton>
+                                            </TableCell>
+                                            <TableCell>
+                                                <ManufacturersEditData
+                                                    manufacturer={manufacturer}
+                                                    onSubmit={refresh}
+                                                >
+                                                    {({ isSubmitting, payInvoice }) => (
+                                                        <TextButton
+                                                            onClick={
+                                                                isSubmitting
+                                                                    ? () => {}
+                                                                    : () => payInvoice()
+                                                            }
+                                                            disabled={isSubmitting}
+                                                        >
+                                                            {isSubmitting
+                                                                ? 'Submitting...'
+                                                                : 'Pay Invoice'}
+                                                        </TextButton>
+                                                    )}
+                                                </ManufacturersEditData>
                                             </TableCell>
                                         </TableRow>
                                     ))}
