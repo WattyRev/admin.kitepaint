@@ -52,10 +52,10 @@ class KitePaintApi {
     async updateDesign(design) {
         const path = '/designs.php';
         let response;
+        const bodyFormData = new FormData();
+        const data = design.buildPayload();
+        Object.keys(data).forEach(key => bodyFormData.append(key, data[key]));
         try {
-            const bodyFormData = new FormData();
-            const data = design.buildPayload();
-            Object.keys(data).forEach(key => bodyFormData.append(key, data[key]));
             response = await this.axiosInstance.post(path, bodyFormData);
             if (!response?.data?.valid) {
                 throw new Error('Request is invalid');
@@ -84,10 +84,10 @@ class KitePaintApi {
     async updateProduct(product) {
         const path = '/products.php';
         let response;
+        const bodyFormData = new FormData();
+        const data = product.buildPayload();
+        Object.keys(data).forEach(key => bodyFormData.append(key, data[key]));
         try {
-            const bodyFormData = new FormData();
-            const data = product.buildPayload();
-            Object.keys(data).forEach(key => bodyFormData.append(key, data[key]));
             response = await this.axiosInstance.post(path, bodyFormData);
             if (!response?.data?.valid) {
                 throw new Error('Request is invalid');
@@ -102,11 +102,11 @@ class KitePaintApi {
     async createProduct(product) {
         const path = '/products.php';
         let response;
+        const bodyFormData = new FormData();
+        const data = product.buildPayload();
+        Object.keys(data).forEach(key => bodyFormData.append(key, data[key]));
+        bodyFormData.append('new', true);
         try {
-            const bodyFormData = new FormData();
-            const data = product.buildPayload();
-            Object.keys(data).forEach(key => bodyFormData.append(key, data[key]));
-            bodyFormData.append('new', true);
             response = await this.axiosInstance.post(path, bodyFormData);
             if (!response?.data?.valid) {
                 throw new Error('Request is invalid');

@@ -17,16 +17,10 @@ const Product = createModel('Product', {
 
     buildPayload() {
         return {
-            ...this.getProperties(
-                'id',
-                'colors',
-                'embed',
-                'manufacturer',
-                'name',
-                'notes',
-                'url',
-                'variations'
-            ),
+            ...this.getProperties('id', 'embed', 'manufacturer', 'name', 'url'),
+            variations: JSON.stringify(this.get('variations')),
+            colors: JSON.stringify(this.get('colors')),
+            notes: JSON.stringify(this.get('notes')),
             status: PRODUCT_STATUSES.indexOf(this.get('status')),
         };
     },
@@ -41,6 +35,7 @@ Product.prototype.propTypes = {
         })
     ),
     created: PropTypes.string,
+    /** A list of domains separated by commas */
     embed: PropTypes.string,
     manufacturer: PropTypes.string,
     status: PropTypes.oneOf(PRODUCT_STATUSES),

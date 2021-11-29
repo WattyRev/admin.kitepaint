@@ -9,5 +9,6 @@ rules:
     no-param-reassign: 'off'
     zillow/jest/require-tothrow-message: 'off'
     zillow/react-hooks/exhaustive-deps: 'off'
+    zillow/react/no-array-index-key: 'warn'
 globals:
     renderWithTheme: true

@@ -62,9 +62,6 @@ const Navigation = () => (
         <Item as={NavLink} to="/manufacturers">
             Manufacturers
         </Item>
-        <Item as={NavLink} to="/retailers">
-            Retailers
-        </Item>
         <Item as={NavLink} to="/users">
             Users
         </Item>

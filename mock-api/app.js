@@ -88,11 +88,11 @@ app.post('/api/products.php', (request, response) => {
             created: `${now.getUTCMonth() + 1}/${now.getUTCDate()}/${now.getUTCFullYear()}`,
             name: product.name,
             manufacturer: product.manufacturer,
-            colors: JSON.stringify(product.colors),
+            colors: product.colors,
             variations: product.variations,
             url: product.url,
             status: product.status,
-            notes: JSON.stringify(product.notes),
+            notes: product.notes,
             embed: product.embed,
         });
     } else {
@@ -107,11 +107,11 @@ app.post('/api/products.php', (request, response) => {
         Object.assign(storedProduct, {
             name: product.name,
             manufacturer: product.manufacturer,
-            colors: JSON.stringify(product.colors),
-            variations: product.variations,
+            colors: product.colors,
+            variations: JSON.parse(product.variations),
             url: product.url,
-            status: product.status,
-            notes: JSON.stringify(product.notes),
+            status: '0',
+            notes: product.notes,
             embed: product.embed,
         });
     }
