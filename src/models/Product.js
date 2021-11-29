@@ -5,15 +5,15 @@ export const PRODUCT_STATUSES = ['Private', 'Unlisted', 'Public'];
 
 const Product = createModel('Product', {
     id: null,
-    colors: null,
-    created: null,
-    embed: null,
-    manufacturer: null,
-    name: null,
-    notes: null,
+    colors: [],
+    created: '',
+    embed: '',
+    manufacturer: '',
+    name: '',
+    notes: [],
     status: null,
-    url: null,
-    variations: null,
+    url: '',
+    variations: [],
 
     buildPayload() {
         return {

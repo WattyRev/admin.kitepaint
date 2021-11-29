@@ -3,6 +3,8 @@ const express = require('express');
 const multer = require('multer');
 const designs = require('./data/designs');
 const products = require('./data/products');
+const manufacturers = require('./data/manufacturers');
+const users = require('./data/users');
 
 const upload = multer();
 const app = express();
@@ -111,6 +113,111 @@ app.post('/api/products.php', (request, response) => {
             status: product.status,
             notes: JSON.stringify(product.notes),
             embed: product.embed,
+        });
+    }
+    response.json({
+        message: '',
+        valid: true,
+    });
+});
+
+app.get('/api/manufacturers.php', (request, response) => {
+    response.json(manufacturers);
+});
+
+app.post('/api/manufacturers.php', (request, response) => {
+    if (request.body.new) {
+        const manufacturer = request.body;
+        const now = new Date();
+        manufacturers.push({
+            id: manufacturers.length,
+            activated: '1',
+            created: `${now.getUTCMonth() + 1}/${now.getUTCDate()}/${now.getUTCFullYear()}`,
+            name: manufacturer.name,
+            contact_name: manufacturer.contact_name,
+            contact_phone: manufacturer.contact_phone,
+            contact_email: manufacturer.contact_email,
+            billing_email: manufacturer.billing_email,
+            invoice_amount: manufacturer.invoice_amount,
+            logo: manufacturer.logo,
+            website: manufacturer.website,
+        });
+    } else {
+        const { id } = request.body;
+        const manufacturer = manufacturers.find(_manufacturer => _manufacturer.id === id);
+        if (!manufacturer) {
+            response.json({
+                message: 'not found',
+                valid: false,
+            });
+            return;
+        }
+        if (request.body.paid) {
+            const now = new Date();
+            manufacturer.last_paid = `${
+                now.getUTCMonth() + 1
+            }/${now.getUTCDate()}/${now.getUTCFullYear()}`;
+        } else {
+            const {
+                activated,
+                name,
+                contact_name,
+                contact_phone,
+                contact_email,
+                billing_email,
+                invoice_amount,
+                logo,
+                website,
+            } = request.body;
+            Object.assign(manufacturer, {
+                activated: activated === 'true' ? '1' : '0',
+                name,
+                contact_name,
+                contact_phone,
+                contact_email,
+                billing_email,
+                invoice_amount,
+                logo,
+                website,
+            });
+        }
+    }
+    response.json({
+        message: '',
+        valid: true,
+    });
+});
+
+app.get('/api/users.php', (request, response) => {
+    const { query } = request;
+    let relevantUsers = users;
+    if (query.filter) {
+        const filters = Object.entries(query.filter);
+        const searchCriteria = filters[0][0];
+        const searchTerm = filters[0][1];
+        relevantUsers = relevantUsers.filter(user => user[searchCriteria].includes(searchTerm));
+    }
+    response.json(relevantUsers);
+});
+
+app.post('/api/users.php', (request, response) => {
+    const { loginid, username, email } = request.body;
+    const user = users.find(_users => _users.loginid === loginid);
+    if (!user || !username || !email) {
+        response.json({
+            message: 'not found',
+            valid: false,
+        });
+        return;
+    }
+    if (request.body.reset) {
+        console.log(`reset password for user ${loginid}`);
+    } else {
+        const { activated } = request.body;
+        Object.assign(user, {
+            activated: activated === 'true' ? '1' : '0',
+            username,
+            email,
         });
     }
     response.json({

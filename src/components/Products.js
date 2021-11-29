@@ -10,18 +10,24 @@ import {
     H1,
     Spacer,
     TextButton,
+    Button,
 } from 'react-watty-ui';
 import PageWrapper from './ui/PageWrapper';
 import SearchWrapper from './ui/SearchWrapper';
 import ProductsData from './products/Data';
 import ProductsEdit from './products/Edit';
+import ProductsCreate from './products/Create';
 
 const Products = () => {
     const [editedProduct, setEditedProduct] = useState(null);
+    const [creatingProduct, setCreatingProduct] = useState(false);
     return (
         <PageWrapper>
             <H1>Products</H1>
             <Spacer bottom="md" as="div" />
+            <Button type="button" isPrimary onClick={() => setCreatingProduct(true)}>
+                Add New Product
+            </Button>
             <ProductsData>
                 {({
                     products,
@@ -90,6 +96,11 @@ const Products = () => {
                         <ProductsEdit
                             product={editedProduct}
                             onClose={() => setEditedProduct(null)}
+                            onSubmit={() => refresh()}
+                        />
+                        <ProductsCreate
+                            isOpen={creatingProduct}
+                            onClose={() => setCreatingProduct(false)}
                             onSubmit={() => refresh()}
                         />
                     </React.Fragment>

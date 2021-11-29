@@ -3,6 +3,8 @@ import { error, success } from 'react-watty-ui';
 import env from '../constants/environmentVariables';
 import { transformDesign } from '../models/Design';
 import { transformProduct } from '../models/Product';
+import { transformManufacturer } from '../models/Manufacturer';
+import { transformUser } from '../models/User';
 
 class KitePaintApi {
     constructor() {
@@ -114,6 +116,127 @@ class KitePaintApi {
             throw e;
         }
         success('Product saved');
+    }
+
+    async getManufacturers() {
+        const path = '/manufacturers.php?get=1';
+        const response = await this.axiosInstance.get(path).catch(() => {
+            error('Failed to get manufacturers');
+            return Promise.reject();
+        });
+        const transformedManufacturers = response.data.map(transformManufacturer);
+        return transformedManufacturers;
+    }
+
+    async updateManufacturer(manufacturer) {
+        const path = '/manufacturers.php';
+        let response;
+        try {
+            const bodyFormData = new FormData();
+            const data = manufacturer.buildPayload();
+            Object.keys(data).forEach(key => bodyFormData.append(key, data[key]));
+            response = await this.axiosInstance.post(path, bodyFormData);
+            if (!response?.data?.valid) {
+                throw new Error('Request is invalid');
+            }
+        } catch (e) {
+            error('Failed to save manufacturer');
+            throw e;
+        }
+        success('Manufacturer saved');
+    }
+
+    async payManufacturerInvoice(manufacturer) {
+        const path = '/manufacturers.php';
+        let response;
+        try {
+            const bodyFormData = new FormData();
+            const data = {
+                id: manufacturer.get('id'),
+                paid: true,
+            };
+            Object.keys(data).forEach(key => bodyFormData.append(key, data[key]));
+            response = await this.axiosInstance.post(path, bodyFormData);
+            if (!response?.data?.valid) {
+                throw new Error('Request is invalid');
+            }
+        } catch (e) {
+            error('Failed to save manufacturer');
+            throw e;
+        }
+        success('Manufacturer saved');
+    }
+
+    async createManufacturer(manufacturer) {
+        const path = '/manufacturers.php';
+        let response;
+        try {
+            const bodyFormData = new FormData();
+            const data = manufacturer.buildPayload();
+            Object.keys(data).forEach(key => bodyFormData.append(key, data[key]));
+            bodyFormData.append('new', true);
+            response = await this.axiosInstance.post(path, bodyFormData);
+            if (!response?.data?.valid) {
+                throw new Error('Request is invalid');
+            }
+        } catch (e) {
+            error('Failed to save manufacturer');
+            throw e;
+        }
+        success('Manufacturer saved');
+    }
+
+    async getUsers({ searchTerm, searchCriteria }) {
+        let path =
+            '/users.php?return=loginid&return=username&return=create_time&return=last_login&return=email&return=activated&limit=100';
+        if (searchTerm && searchCriteria) {
+            path += `&filter[${searchCriteria}]=${searchTerm}`;
+        }
+        const response = await this.axiosInstance.get(path).catch(() => {
+            error('Failed to get users');
+            return Promise.reject();
+        });
+        const transformedUsers = response.data.map(transformUser);
+        return transformedUsers;
+    }
+
+    async updateUser(user) {
+        const path = '/users.php';
+        let response;
+        try {
+            const bodyFormData = new FormData();
+            const data = user.buildPayload();
+            Object.keys(data).forEach(key => bodyFormData.append(key, data[key]));
+            response = await this.axiosInstance.post(path, bodyFormData);
+            if (!response?.data?.valid) {
+                throw new Error('Request is invalid');
+            }
+        } catch (e) {
+            error('Failed to save user');
+            throw e;
+        }
+        success('User saved');
+    }
+
+    async resetUserPassword(user) {
+        const path = '/users.php';
+        let response;
+        try {
+            const bodyFormData = new FormData();
+            const data = {
+                reset: true,
+                ...user.getProperties('id', 'username', 'email'),
+            };
+            Object.keys(data).forEach(key => bodyFormData.append(key, data[key]));
+            response = await this.axiosInstance.post(path, bodyFormData);
+            if (!response?.data?.valid) {
+                throw new Error('Request is invalid');
+            }
+        } catch (e) {
+            error('Failed to save user');
+            throw e;
+        }
+        success('User saved');
     }
 }
 
