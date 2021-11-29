@@ -2,19 +2,18 @@ import React, { useState } from 'react';
 import {
     PageLoader,
     Table,
-    TableCell,
     TableHeading,
     TableRow,
     Select,
     Input,
     H1,
     Spacer,
-    TextButton,
 } from 'react-watty-ui';
 import PageWrapper from './ui/PageWrapper';
 import SearchWrapper from './ui/SearchWrapper';
 import UsersData from './users/Data';
 import UsersEdit from './users/Edit';
+import UsersRow from './users/Row';
 
 const Users = () => {
     const [editedUser, setEditedUser] = useState(null);
@@ -64,25 +63,17 @@ const Users = () => {
                                         <TableHeading>Last Login</TableHeading>
                                         <TableHeading>Activated</TableHeading>
                                         <TableHeading />
+                                        <TableHeading />
                                     </TableRow>
                                 </thead>
                                 <tbody>
                                     {users.map(user => (
-                                        <TableRow data-testid="user-row" key={user.get('loginid')}>
-                                            <TableCell>{user.get('loginid')}</TableCell>
-                                            <TableCell>{user.get('username')}</TableCell>
-                                            <TableCell>{user.get('email')}</TableCell>
-                                            <TableCell>{user.get('create_time')}</TableCell>
-                                            <TableCell>{user.get('last_login')}</TableCell>
-                                            <TableCell>
-                                                {user.get('activated') ? 'True' : 'False'}
-                                            </TableCell>
-                                            <TableCell>
-                                                <TextButton onClick={() => setEditedUser(user)}>
-                                                    Edit
-                                                </TextButton>
-                                            </TableCell>
-                                        </TableRow>
+                                        <UsersRow
+                                            key={user.get('loginid')}
+                                            user={user}
+                                            onEdit={setEditedUser}
+                                            onSubmit={refresh}
+                                        />
                                     ))}
                                 </tbody>
                             </Table>

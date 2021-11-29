@@ -18,8 +18,20 @@ const UsersEditData = ({ children, user, onSubmit }) => {
         onSubmit();
     }
 
+    async function resetPassword() {
+        setIsSubmitting(true);
+        try {
+            await api.resetUserPassword(editedUser);
+        } catch {
+            setIsSubmitting(false);
+            return;
+        }
+        onSubmit();
+    }
+
     return children({
         editedUser,
+        resetPassword,
         setEditedUser,
         submit,
         isSubmitting,

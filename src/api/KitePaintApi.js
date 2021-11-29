@@ -161,10 +161,10 @@ class KitePaintApi {
                 throw new Error('Request is invalid');
             }
         } catch (e) {
-            error('Failed to save manufacturer');
+            error('Failed to pay invoice');
             throw e;
         }
-        success('Manufacturer saved');
+        success('Invoice marked as payed');
     }
 
     async createManufacturer(manufacturer) {
@@ -221,22 +221,22 @@ class KitePaintApi {
     async resetUserPassword(user) {
         const path = '/users.php';
         let response;
+        const bodyFormData = new FormData();
+        const data = {
+            reset: true,
+            ...user.getProperties('loginid', 'username', 'email'),
+        };
+        Object.keys(data).forEach(key => bodyFormData.append(key, data[key]));
         try {
-            const bodyFormData = new FormData();
-            const data = {
-                reset: true,
-                ...user.getProperties('id', 'username', 'email'),
-            };
-            Object.keys(data).forEach(key => bodyFormData.append(key, data[key]));
             response = await this.axiosInstance.post(path, bodyFormData);
             if (!response?.data?.valid) {
                 throw new Error('Request is invalid');
             }
         } catch (e) {
-            error('Failed to save user');
+            error('Failed to reset password');
             throw e;
         }
-        success('User saved');
+        success("User's password has been reset");
     }
 }
 
