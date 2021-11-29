@@ -34,6 +34,7 @@ const Manufacturers = () => {
                                 <thead>
                                     <TableRow>
                                         <TableHeading>ID</TableHeading>
+                                        <TableHeading>Name</TableHeading>
                                         <TableHeading>Activated</TableHeading>
                                         <TableHeading>Created</TableHeading>
                                         <TableHeading>Contact Name</TableHeading>
@@ -54,6 +55,7 @@ const Manufacturers = () => {
                                             key={manufacturer.get('id')}
                                         >
                                             <TableCell>{manufacturer.get('id')}</TableCell>
+                                            <TableCell>{manufacturer.get('name')}</TableCell>
                                             <TableCell>
                                                 {manufacturer.get('activated') ? 'True' : 'False'}
                                             </TableCell>

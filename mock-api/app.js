@@ -84,7 +84,7 @@ app.post('/api/products.php', (request, response) => {
     const now = new Date();
     if (product.new) {
         products.push({
-            id: products.length,
+            id: products.length.toString(),
             created: `${now.getUTCMonth() + 1}/${now.getUTCDate()}/${now.getUTCFullYear()}`,
             name: product.name,
             manufacturer: product.manufacturer,
@@ -130,8 +130,8 @@ app.post('/api/manufacturers.php', (request, response) => {
         const manufacturer = request.body;
         const now = new Date();
         manufacturers.push({
-            id: manufacturers.length,
-            activated: '1',
+            id: manufacturers.length.toString(),
+            activated: true,
             created: `${now.getUTCMonth() + 1}/${now.getUTCDate()}/${now.getUTCFullYear()}`,
             name: manufacturer.name,
             contact_name: manufacturer.contact_name,
@@ -170,7 +170,7 @@ app.post('/api/manufacturers.php', (request, response) => {
                 website,
             } = request.body;
             Object.assign(manufacturer, {
-                activated: activated === 'true' ? '1' : '0',
+                activated: activated === 'true',
                 name,
                 contact_name,
                 contact_phone,

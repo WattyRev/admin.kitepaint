@@ -2,18 +2,18 @@ import { createModel } from 'manikin-model';
 import PropTypes from 'prop-types';
 
 const Manufacturer = createModel('Manufacturer', {
-    activated: null,
-    billing_email: null,
-    contact_email: null,
-    contact_name: null,
-    contact_phone: null,
+    activated: false,
+    billing_email: '',
+    contact_email: '',
+    contact_name: '',
+    contact_phone: '',
     created: null,
     id: null,
     invoice_amount: null,
     last_paid: null,
-    logo: null,
-    name: null,
-    website: null,
+    logo: '',
+    name: '',
+    website: '',
 
     buildPayload() {
         return {
@@ -67,7 +67,7 @@ export function transformManufacturer(rawManufacturer) {
     } = rawManufacturer;
     return new Manufacturer({
         id,
-        activated: activated === '1',
+        activated,
         billing_email,
         contact_email,
         contact_name,

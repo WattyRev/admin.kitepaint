@@ -8,7 +8,7 @@ const ProductsEditData = ({ children, onSubmit }) => {
     async function submit(product) {
         setIsSubmitting(true);
         try {
-            await api.updateProduct(product);
+            await api.createProduct(product);
         } catch {
             setIsSubmitting(false);
             return;
