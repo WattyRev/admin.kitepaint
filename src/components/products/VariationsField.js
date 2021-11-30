@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { Button, Input } from 'react-watty-ui';
+import generateId from '../../util/generateId';
 import UpDownButtons from '../ui/UpDownButtons';
 
 const Flex = styled.div`
@@ -14,6 +15,7 @@ const VariationsField = ({ variations, onChange }) => (
             <Flex key={variation.id}>
                 <Button
                     type="button"
+                    aria-label="Remove Variation"
                     onClick={() =>
                         onChange(variations.filter(_variation => variation.id !== _variation.id))
                     }
@@ -78,7 +80,7 @@ const VariationsField = ({ variations, onChange }) => (
                 onChange([
                     ...variations,
                     {
-                        id: new Date().getTime().toString(),
+                        id: generateId(),
                         name: '',
                         sortIndex: variations.length,
                         svg: '',
@@ -86,7 +88,7 @@ const VariationsField = ({ variations, onChange }) => (
                 ])
             }
         >
-            Add
+            Add Variation
         </Button>
     </React.Fragment>
 );

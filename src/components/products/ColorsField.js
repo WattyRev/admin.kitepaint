@@ -26,6 +26,7 @@ const ColorsField = ({ colors, onChange }) => {
         return (
             <React.Fragment>
                 <Textarea
+                    placeholder="JSON"
                     value={colorsString}
                     onChange={e => setColorsString(e.target.value)}
                     onBlur={e => {
@@ -52,6 +53,7 @@ const ColorsField = ({ colors, onChange }) => {
                     <Button
                         type="button"
                         onClick={() => onChange(colors.filter((_, _index) => index !== _index))}
+                        aria-label="Remove Color"
                     >
                         X
                     </Button>
@@ -62,7 +64,7 @@ const ColorsField = ({ colors, onChange }) => {
                             color.name = newName;
                             onChange(colors);
                         }}
-                        placeholder="Name"
+                        placeholder="Color Name"
                         required
                     />
                     <ColorInput
@@ -72,13 +74,13 @@ const ColorsField = ({ colors, onChange }) => {
                             color.color = newColor;
                             onChange(colors);
                         }}
-                        placeholder="Hexidecimal"
+                        placeholder="Color Hexidecimal"
                         required
                     />
                 </Flex>
             ))}
             <Button type="button" onClick={() => onChange([...colors, { name: '', color: '' }])}>
-                Add
+                Add Color
             </Button>
             <br />
             <TextButton type="button" onClick={() => setEditAsText(true)}>

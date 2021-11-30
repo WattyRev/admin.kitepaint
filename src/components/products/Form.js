@@ -89,6 +89,7 @@ const ProductsForm = ({ product, onProductUpdate, onSubmit, isSubmitting }) => (
             <Flex key={index}>
                 <Button
                     type="button"
+                    aria-label="Remove Note"
                     onClick={() => {
                         const notes = product.get('notes');
                         notes.splice(index, 1);
@@ -112,7 +113,7 @@ const ProductsForm = ({ product, onProductUpdate, onSubmit, isSubmitting }) => (
             type="button"
             onClick={() => onProductUpdate(product.set('notes', [...product.get('notes'), '']))}
         >
-            Add
+            Add Note
         </Button>
 
         <br />
