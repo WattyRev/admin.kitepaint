@@ -1,6 +1,9 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import App from '../App';
+import api from '../../api/KitePaintApi';
+
+jest.mock('../../api/KitePaintApi');
 
 jest.mock('../Router', () => ({
     __esModule: true,
@@ -8,9 +11,12 @@ jest.mock('../Router', () => ({
 }));
 
 describe('App', () => {
-    it('renders the router', () => {
-        render(<App />);
-        const routerElement = screen.getByTestId(/router/);
+    beforeEach(() => {
+        api.ping.mockResolvedValue();
+    });
+    it('renders the router', async () => {
+        const { findByTestId } = render(<App />);
+        const routerElement = await findByTestId('router');
         expect(routerElement).toBeInTheDocument();
     });
 });
