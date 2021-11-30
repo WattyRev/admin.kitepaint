@@ -129,14 +129,14 @@
 				<div ng-hide="editing.new">
 					<label>Product Opt Out</label>
 					<div ng-repeat="product in products">
-						<label for="opt-out-{{product.id}}">{{product.id}} - {{product.name}}</label>
+						<label htmlFor="opt-out-{{product.id}}">{{product.id}} - {{product.name}}</label>
 						<input type="checkbox" ng-model="editing.product_opt_out[product.id]" id="opt-out-{{product.id}}">
 					</div>
 				</div>
 				<div ng-hide="editing.new">
 					<label>Product Urls</label>
 					<div ng-repeat="product in products">
-						<label for="url-{{product.id}}">{{product.id}} - {{product.name}}</label>
+						<label htmlFor="url-{{product.id}}">{{product.id}} - {{product.name}}</label>
 						<input type="text" ng-model="editing.product_urls[product.id]" id="url-{{product.id}}">
 					</div>
 				</div>

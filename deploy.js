@@ -1,23 +1,25 @@
-const Client = require("ssh2-sftp-client");
-const fs = require("fs");
-const path = require("path");
+/* eslint-disable zillow/import/no-extraneous-dependencies, no-console */
+
+const Client = require('ssh2-sftp-client');
+const fs = require('fs');
+const path = require('path');
 
 // Get command line arguments by name. Supported arguments:
 // host, user, pass, path, dist, verbose
 const args = process.argv.slice(2).reduce((accumulatedArguments, arg) => {
-    const split = arg.split("=");
+    const split = arg.split('=');
     accumulatedArguments[split[0]] = split[1];
     return accumulatedArguments;
 }, {});
-const host = args.host;
-const user = args.user;
+const { host } = args;
+const { user } = args;
 const password = args.pass;
 const remoteDirectory = args.path;
-const localDirectory = args.dist || "dist";
+const localDirectory = args.dist || 'build';
 const verbose = !!args.verbose;
 
 // Create the FTP client
-const client = new Client();
+const ftpClient = new Client();
 
 // Recursively upload a folder's contents
 async function uploadContents(client, folderToUpload, uploadTo) {
@@ -37,9 +39,7 @@ async function uploadContents(client, folderToUpload, uploadTo) {
         if (verbose) {
             console.log(`Reading details of remote file ${item}`);
         }
-        const remoteItem = remoteList.find(
-            remoteItem => remoteItem.name === item
-        );
+        const remoteItem = remoteList.find(_remoteItem => _remoteItem.name === item);
         const remotePath = `${uploadTo}/${item}`;
         const localPath = path.join(folderToUpload, item);
 
@@ -74,20 +74,20 @@ async function uploadContents(client, folderToUpload, uploadTo) {
     return Promise.all(uploadPromises);
 }
 
-client
+ftpClient
     .connect({
         host,
-        port: "2222",
+        port: '2222',
         username: user,
-        password
+        password,
     })
-    .then(async data => {
-        console.log("Connected to SFTP.");
-        await uploadContents(client, localDirectory, remoteDirectory);
-        return client.end();
+    .then(async () => {
+        console.log('Connected to SFTP.');
+        await uploadContents(ftpClient, localDirectory, remoteDirectory);
+        return ftpClient.end();
     })
     .catch(error => {
-        console.error("An error occurred.", error);
-        client.end();
+        console.error('An error occurred.', error);
+        ftpClient.end();
         process.exit(1);
     });

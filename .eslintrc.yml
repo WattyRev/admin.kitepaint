@@ -1,0 +1,14 @@
+extends:
+    - plugin:zillow/recommended
+    - plugin:zillow/jest
+env:
+    browser: true
+rules:
+    no-console: ['error', { allow: ['warn', 'error'] }]
+    prefer-destructuring: 'off'
+    no-param-reassign: 'off'
+    zillow/jest/require-tothrow-message: 'off'
+    zillow/react-hooks/exhaustive-deps: 'off'
+    zillow/react/no-array-index-key: 'off'
+globals:
+    renderWithTheme: true
