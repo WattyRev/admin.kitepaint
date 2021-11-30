@@ -12,6 +12,7 @@ const app = express();
 // Set headers for all APIs
 app.use((request, response, next) => {
     response.append('Access-Control-Allow-Origin', ['*']);
+    response.append('Access-Control-Allow-Headers', ['Kp-Auth-Token']);
     next();
 });
 
@@ -26,8 +27,13 @@ app.listen(13390, () => {
 });
 
 // Define routes
+
 app.get('/api/', (request, response) => {
     response.send('test');
+});
+
+app.get('/api/ping.php', (request, response) => {
+    response.json({ message: 'pong' });
 });
 
 app.get('/api/designs.php', (request, response) => {

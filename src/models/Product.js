@@ -59,13 +59,13 @@ export function transformProduct(rawProduct) {
         rawProduct;
     return new Product({
         id,
-        colors: JSON.parse(colors),
+        colors: colors ? JSON.parse(colors) : [],
         created,
         embed,
         manufacturer,
         status: PRODUCT_STATUSES[parseInt(status, 10)],
         name,
-        notes: JSON.parse(notes),
+        notes: notes ? JSON.parse(notes) : [],
         url,
         variations,
     });
