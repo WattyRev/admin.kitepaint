@@ -56,9 +56,14 @@ class KitePaintApi {
      */
     axiosInstance = null;
 
+    ping() {
+        const path = '/ping.php';
+        return this.axiosInstance.get(path);
+    }
+
     async getDesigns({ searchTerm, searchCriteria }) {
         let path =
-            '/designs.php?limit=100&return=id&return=active&return=created&return=user&return=status&return=name&return=product&return=updated';
+            '/designs.php?limit=100&return%5B%5D=id&return%5B%5D=active&return%5B%5D=created&return%5B%5D=user&return%5B%5D=status&return%5B%5D=name&return%5B%5D=product&return%5B%5D=updated';
         if (searchTerm && searchCriteria) {
             path += `&filter[${searchCriteria}]=${searchTerm}`;
         }
@@ -90,7 +95,7 @@ class KitePaintApi {
 
     async getProducts({ searchTerm, searchCriteria }) {
         let path =
-            '/products.php?limit=100&return=id&return=created&return=embed&return=colors&return=manufacturer&return=name&return=notes&return=status&return=url&return=variations';
+            '/products.php?limit=100&return%5B%5D=id&return%5B%5D=created&return%5B%5D=embed&return%5B%5D=colors&return%5B%5D=manufacturer&return%5B%5D=name&return%5B%5D=notes&return%5B%5D=status&return%5B%5D=url&return%5B%5D=variations';
         if (searchTerm && searchCriteria) {
             path += `&filter[${searchCriteria}]=${searchTerm}`;
         }
@@ -209,7 +214,7 @@ class KitePaintApi {
 
     async getUsers({ searchTerm, searchCriteria }) {
         let path =
-            '/users.php?return=loginid&return=username&return=create_time&return=last_login&return=email&return=activated&limit=100';
+            '/users.php?return%5B%5D=loginid&return%5B%5D=username&return%5B%5D=create_time&return%5B%5D=last_login&return%5B%5D=email&return%5B%5D=activated&limit=100';
         if (searchTerm && searchCriteria) {
             path += `&filter[${searchCriteria}]=${searchTerm}`;
         }

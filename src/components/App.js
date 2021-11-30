@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styled, { ThemeProvider } from 'styled-components';
 import theme, { setupFontAwesome, Alert } from 'react-watty-ui';
+import api from '../api/KitePaintApi';
 import Router from './Router';
 import Navigation from './Navigation';
 import GlobalStyles from './GlobalStyles';
@@ -12,6 +13,15 @@ const FlexWrapper = styled('div')`
 `;
 
 function App() {
+    const [pinged, setPinged] = useState(false);
+    useEffect(() => {
+        api.ping().then(() => {
+            setPinged(true);
+        });
+    }, []);
+    if (!pinged) {
+        return <div />;
+    }
     return (
         <ThemeProvider theme={theme}>
             <GlobalStyles />
