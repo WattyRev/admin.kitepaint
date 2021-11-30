@@ -72,7 +72,7 @@
 			<h2 ng-hide="editing.new">Editing {{editing.name}}</h2>
 			<form ng-submit="save_product(editing)">
 				<div class="half" ng-hide="editing.new">
-					<label for="input-status">Status</label>
+					<label htmlFor="input-status">Status</label>
                     <select id="input-status" ng-model="editing.status">
                         <option value="0">Private</option>
                         <option value="1">Unlisted</option>
@@ -80,7 +80,7 @@
                     </select>
 				</div>
 				<div class="half left">
-					<label for="input-name">Name</label>
+					<label htmlFor="input-name">Name</label>
 					<input
 						type="text"
 						id="input-name"
@@ -89,7 +89,7 @@
 					>
 				</div>
 				<div class="half right">
-					<label for="input-manufacturer">Manufacturer</label>
+					<label htmlFor="input-manufacturer">Manufacturer</label>
 					<input
 						type="text"
 						id="input-manufacturer"
@@ -98,7 +98,7 @@
 					>
 				</div>
 				<div class="half left">
-					<label for="input-url">URL</label>
+					<label htmlFor="input-url">URL</label>
 					<input
 						type="url"
 						id="input-url"
@@ -106,7 +106,7 @@
 					>
 				</div>
 				<div class="half right">
-					<label for="input-embed">Embed Domains</label>
+					<label htmlFor="input-embed">Embed Domains</label>
 					<input
 						type="text"
 						id="input-embed"
