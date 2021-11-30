@@ -6,12 +6,14 @@
     "start": "concurrently \"npm run start:app\" \"npm run start:api\"",
     "start:app": "env-cmd -r .env.js -e local react-scripts start",
     "start:api": "nodemon mock-api/app.js",
-    "build": "react-scripts build",
+    "build": "env-cmd -r .env.js -e local react-scripts build",
+    "build:beta": "env-cmd -r .env.js -e beta react-scripts build",
+    "build:prod": "env-cmd -r .env.js -e prod react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "lint": "eslint .",
-    "deploy:prod": "node ./deploy.js path=./public_html/admin.kitepaint.com/",
-    "deploy:beta": "node ./deploy.js path=./public_html/admin.beta.kitepaint.com/"
+    "deploy:prod": "npm run build:prod && node ./deploy.js path=./public_html/admin.kitepaint.com/",
+    "deploy:beta": "npm run build:beta && node ./deploy.js path=./public_html/admin.beta.kitepaint.com/"
   },
   "dependencies": {
     "axios": "^0.24.0",

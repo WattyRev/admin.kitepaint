@@ -15,7 +15,7 @@ const { host } = args;
 const { user } = args;
 const password = args.pass;
 const remoteDirectory = args.path;
-const localDirectory = args.dist || 'dist';
+const localDirectory = args.dist || 'build';
 const verbose = !!args.verbose;
 
 // Create the FTP client
