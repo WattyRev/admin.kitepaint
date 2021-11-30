@@ -30,6 +30,7 @@ const DesignsEdit = ({ design, onClose, onSubmit }) => (
                         <Label htmlFor="name">Name</Label>
                         <Input
                             id="name"
+                            required
                             value={editedDesign.get('name')}
                             onChange={e =>
                                 setEditedDesign(editedDesign.set('name', e.target.value))
@@ -57,6 +58,7 @@ const DesignsEdit = ({ design, onClose, onSubmit }) => (
                         <Input
                             id="user"
                             value={editedDesign.get('user')}
+                            required
                             onChange={e =>
                                 setEditedDesign(editedDesign.set('user', e.target.value))
                             }

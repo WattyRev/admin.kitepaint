@@ -23,6 +23,7 @@ const VariationsField = ({ variations, onChange }) => (
                 <Input
                     placeholder="Name"
                     value={variation.name}
+                    required
                     onChange={e => {
                         variation.name = e.target.value;
                         onChange(variations);
@@ -30,6 +31,7 @@ const VariationsField = ({ variations, onChange }) => (
                 />
                 <Input
                     placeholder="SVG"
+                    required
                     value={variation.svg}
                     onChange={e => {
                         variation.svg = e.target.value;

@@ -39,6 +39,7 @@ const ManufacturersForm = ({ manufacturer, onManufacturerUpdate, onSubmit, isSub
             id="name"
             value={manufacturer.get('name') || ''}
             onChange={e => onManufacturerUpdate(manufacturer.set('name', e.target.value))}
+            required
         />
 
         <Label htmlFor="contact_name">Contact Name</Label>
@@ -50,6 +51,7 @@ const ManufacturersForm = ({ manufacturer, onManufacturerUpdate, onSubmit, isSub
 
         <Label htmlFor="contact_phone">Contact Phone</Label>
         <Input
+            type="tel"
             id="contact_phone"
             value={manufacturer.get('contact_phone') || ''}
             onChange={e => onManufacturerUpdate(manufacturer.set('contact_phone', e.target.value))}
@@ -58,6 +60,7 @@ const ManufacturersForm = ({ manufacturer, onManufacturerUpdate, onSubmit, isSub
         <Label htmlFor="contact_email">Contact Email</Label>
         <Input
             id="contact_email"
+            type="email"
             value={manufacturer.get('contact_email') || ''}
             onChange={e => onManufacturerUpdate(manufacturer.set('contact_email', e.target.value))}
         />
@@ -65,6 +68,7 @@ const ManufacturersForm = ({ manufacturer, onManufacturerUpdate, onSubmit, isSub
         <Label htmlFor="billing_email">Billing Email</Label>
         <Input
             id="billing_email"
+            type="email"
             value={manufacturer.get('billing_email') || ''}
             onChange={e => onManufacturerUpdate(manufacturer.set('billing_email', e.target.value))}
         />
@@ -89,6 +93,7 @@ const ManufacturersForm = ({ manufacturer, onManufacturerUpdate, onSubmit, isSub
         <Label htmlFor="website">Website</Label>
         <Input
             id="website"
+            type="url"
             value={manufacturer.get('website') || ''}
             onChange={e => onManufacturerUpdate(manufacturer.set('website', e.target.value))}
         />

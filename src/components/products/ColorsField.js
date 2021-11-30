@@ -7,6 +7,11 @@ const Flex = styled.div`
     display: flex;
 `;
 
+const ColorInput = styled(Input)`
+    position: relative;
+    border-bottom: 5px solid ${props => props.value};
+`;
+
 const ColorsField = ({ colors, onChange }) => {
     const [editAsText, setEditAsText] = useState(false);
     const [colorsString, setColorsString] = useState(JSON.stringify(colors));
@@ -58,8 +63,9 @@ const ColorsField = ({ colors, onChange }) => {
                             onChange(colors);
                         }}
                         placeholder="Name"
+                        required
                     />
-                    <Input
+                    <ColorInput
                         value={color.color}
                         onChange={e => {
                             const newColor = e.target.value;
@@ -67,6 +73,7 @@ const ColorsField = ({ colors, onChange }) => {
                             onChange(colors);
                         }}
                         placeholder="Hexidecimal"
+                        required
                     />
                 </Flex>
             ))}

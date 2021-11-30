@@ -32,6 +32,7 @@ const UsersEdit = ({ user, onClose, onSubmit }) => (
                         <Label htmlFor="username">Username</Label>
                         <Input
                             id="username"
+                            required
                             value={editedUser.get('username')}
                             onChange={e =>
                                 setEditedUser(editedUser.set('username', e.target.value))
@@ -40,6 +41,8 @@ const UsersEdit = ({ user, onClose, onSubmit }) => (
                         <Label htmlFor="email">Email</Label>
                         <Input
                             id="email"
+                            type="email"
+                            required
                             value={editedUser.get('email')}
                             onChange={e => setEditedUser(editedUser.set('email', e.target.value))}
                         />

@@ -46,6 +46,7 @@ const ProductsForm = ({ product, onProductUpdate, onSubmit, isSubmitting }) => (
             id="name"
             value={product.get('name') || ''}
             onChange={e => onProductUpdate(product.set('name', e.target.value))}
+            required
         />
 
         <Label htmlFor="manufacturer">Manufacturer</Label>
@@ -53,11 +54,13 @@ const ProductsForm = ({ product, onProductUpdate, onSubmit, isSubmitting }) => (
             id="manufacturer"
             value={product.get('manufacturer') || ''}
             onChange={e => onProductUpdate(product.set('manufacturer', e.target.value))}
+            required
         />
 
         <Label htmlFor="url">URL</Label>
         <Input
             id="url"
+            type="url"
             value={product.get('url') || ''}
             onChange={e => onProductUpdate(product.set('url', e.target.value))}
         />
