@@ -38,7 +38,7 @@ class KitePaintApi {
         this.axiosInstance.interceptors.response.use(undefined, handleFailure);
     }
 
-    baseUrl = `${env.apiScheme}://${env.apiHost}${env.apiPort ? ':' : ''}${env.apiPort}${
+    baseUrl = `${env.apiScheme}://${env.apiHost}${env.apiPort ? ':' : ''}${env.apiPort || ''}${
         env.apiPath
     }`;
 
