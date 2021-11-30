@@ -6,6 +6,23 @@ import { transformProduct } from '../models/Product';
 import { transformManufacturer } from '../models/Manufacturer';
 import { transformUser } from '../models/User';
 
+function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) {
+        return parts.pop().split(';').shift();
+    }
+    return null;
+}
+
+function handleFailure(networkError) {
+    const responseCode = networkError?.response?.status;
+    if (responseCode === 401) {
+        const { apiScheme, apiHost, apiPath } = env;
+        window.location = `${apiScheme}://${apiHost}${apiPath}/login.php`;
+    }
+}
+
 class KitePaintApi {
     constructor() {
         this.config = {
@@ -13,10 +30,12 @@ class KitePaintApi {
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'multipart/form-data',
+                'Kp-Auth-Token': getCookie('Kp-Auth-Token'),
             },
         };
 
         this.axiosInstance = axios.create(this.config);
+        this.axiosInstance.interceptors.response.use(undefined, handleFailure);
     }
 
     baseUrl = `${env.apiScheme}://${env.apiHost}${env.apiPort ? ':' : ''}${env.apiPort}${

@@ -7,5 +7,15 @@ const local = {
 }
 
 module.exports = Promise.resolve({
-    local
+    local,
+    beta: {
+        REACT_APP_API_HOST: 'api.beta.kitepaint.com',
+        REACT_APP_API_PATH: '/php/admin',
+        REACT_APP_API_SCHEME: 'https',
+    },
+    prod: {
+        REACT_APP_API_HOST: 'api.kitepaint.com',
+        REACT_APP_API_PATH: '/php/admin',
+        REACT_APP_API_SCHEME: 'https',
+    }
 });
