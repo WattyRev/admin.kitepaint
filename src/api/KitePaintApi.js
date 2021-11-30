@@ -19,7 +19,9 @@ function handleFailure(networkError) {
     const responseCode = networkError?.response?.status;
     if (responseCode === 401) {
         const { apiScheme, apiHost, apiPath } = env;
-        window.location = `${apiScheme}://${apiHost}${apiPath}/login.php`;
+        window.location = `${apiScheme}://${apiHost}${apiPath}/login.php?returnUrl=${encodeURI(
+            window.location.href
+        )}`;
     }
 }
 
