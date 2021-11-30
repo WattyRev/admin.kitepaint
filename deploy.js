@@ -11,9 +11,9 @@ const args = process.argv.slice(2).reduce((accumulatedArguments, arg) => {
     accumulatedArguments[split[0]] = split[1];
     return accumulatedArguments;
 }, {});
-const { host } = args;
-const { user } = args;
-const password = args.pass;
+const host = process.env.SFTP_HOST;
+const user = process.env.SFTP_USER;
+const password = process.env.SFTP_PASS;
 const remoteDirectory = args.path;
 const localDirectory = args.dist || 'build';
 const verbose = !!args.verbose;
