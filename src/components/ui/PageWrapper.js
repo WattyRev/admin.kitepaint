@@ -5,6 +5,7 @@ const PageWrapper = styled.article`
     flex-grow: 1;
     overflow: auto;
     padding: 20px;
+    box-sizing: border-box;
 `;
 
 export default PageWrapper;
