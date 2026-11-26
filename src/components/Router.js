@@ -7,6 +7,7 @@ import Designs from './Designs';
 import Manufacturers from './Manufacturers';
 import Products from './Products';
 import Users from './Users';
+import BackfillColors from './backfill/BackfillColors';
 
 const Router = ({ before }) => (
     <HashRouter>
@@ -17,6 +18,7 @@ const Router = ({ before }) => (
             <Route path="/manufacturers" element={<Manufacturers />} />
             <Route path="/products" element={<Products />} />
             <Route path="/users" element={<Users />} />
+            <Route path="/backfill-colors" element={<BackfillColors />} />
             <Route element={<NotFound />} />
         </Routes>
     </HashRouter>

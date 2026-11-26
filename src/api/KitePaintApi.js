@@ -264,6 +264,27 @@ class KitePaintApi {
         }
         success("User's password has been reset");
     }
+
+    /**
+     * Fills in design colors for one batch of designs with an id greater than afterId.
+     * @param {Number} afterId The last design id processed so far (0 for the first batch)
+     * @return {Promise<{processed: Number, nextAfterId: Number, remaining: Number}>}
+     */
+    async backfillDesignColors(afterId) {
+        const path = '/backfill_design_colors.php';
+        const bodyFormData = new FormData();
+        bodyFormData.append('afterId', afterId);
+        try {
+            const response = await this.axiosInstance.post(path, bodyFormData);
+            if (!response?.data?.valid) {
+                throw new Error('Request is invalid');
+            }
+            return response.data;
+        } catch (e) {
+            error(e?.response?.data?.message || 'Failed to backfill design colors');
+            throw e;
+        }
+    }
 }
 
 const api = new KitePaintApi();
