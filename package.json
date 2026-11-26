@@ -46,7 +46,7 @@
     "nodemon": "^2.0.15",
     "prettier": "^2.4.1",
     "react-scripts": "4.0.3",
-    "ssh2-sftp-client": "^3.1.0"
+    "ssh2-sftp-client": "^10.0.3"
   },
   "repository": {
     "type": "git",

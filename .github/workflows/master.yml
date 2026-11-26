@@ -1,0 +1,39 @@
+name: Master
+run-name: Test and deploy master
+on:
+  push:
+    branches:
+      - master
+env:
+  # react-scripts 4 uses webpack 4, which needs the legacy OpenSSL provider on Node 17+
+  NODE_OPTIONS: --openssl-legacy-provider
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.12.1'
+      - run: npm ci
+      - run: npm run test -- --coverage
+        env:
+          CI: true
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    concurrency: deploy-prod
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.12.1'
+      - run: npm ci
+      - env:
+          SFTP_HOST: 192.254.225.178
+          SFTP_USER: ${{ secrets.SFTP_USER }}
+          SFTP_PASS: ${{ secrets.SFTP_PASS }}
+        run: npm run deploy:prod
