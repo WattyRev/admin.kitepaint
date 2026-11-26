@@ -290,7 +290,7 @@ class KitePaintApi {
      * Re-picks the primary (thumbnail) variation for one batch of designs with an id greater than
      * afterId.
      * @param {Number} afterId The last design id processed so far (0 for the first batch)
-     * @return {Promise<{processed: Number, changed: Number, nextAfterId: Number, remaining: Number}>}
+     * @return {Promise<Object>} The processed, changed, nextAfterId and remaining counts
      */
     async backfillDesignPrimary(afterId) {
         const path = '/backfill_design_primary.php';
