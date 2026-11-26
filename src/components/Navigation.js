@@ -68,6 +68,9 @@ const Navigation = () => (
         <Item as={NavLink} to="/backfill-colors">
             Backfill colors
         </Item>
+        <Item as={NavLink} to="/backfill-primary">
+            Backfill thumbnails
+        </Item>
     </Wrapper>
 );
 
