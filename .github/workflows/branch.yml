@@ -1,0 +1,35 @@
+name: Branches
+run-name: Test branches
+on:
+  pull_request:
+  push:
+    branches:
+      - '**'
+      - '!staging'
+      - '!master'
+env:
+  # react-scripts 4 uses webpack 4, which needs the legacy OpenSSL provider on Node 17+
+  NODE_OPTIONS: --openssl-legacy-provider
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.12.1'
+      - run: npm ci
+      - run: npm run test -- --coverage
+        env:
+          CI: true
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.12.1'
+      - run: npm ci
+      - run: npm run build

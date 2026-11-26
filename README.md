@@ -1,7 +1,7 @@
-[![Travis CI][travis-badge]][travis]
+[![Master][actions-badge]][actions]
 
-[travis-badge]: https://travis-ci.com/WattyRev/admin.kitepaint.svg?branch=master
-[travis]: https://travis-ci.com/WattyRev/admin.kitepaint
+[actions-badge]: https://github.com/WattyRev/admin.kitepaint/actions/workflows/master.yml/badge.svg
+[actions]: https://github.com/WattyRev/admin.kitepaint/actions
 
 # admin.kitepaint
 
