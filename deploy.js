@@ -63,13 +63,13 @@ async function uploadContents(client, folderToUpload, uploadTo) {
         const shouldAlwaysUpload = !!['.html'].find(search => localPath.indexOf(search) > -1);
         if (!shouldAlwaysUpload && remoteItemSize === localItemSize) {
             console.log(`No changes made to ${localPath}. Skipping upload.`);
-            return new Promise(resolve => resolve());
+            return Promise.resolve();
         }
 
         console.log(`Uploading ${localPath} ...`);
         return client.put(localPath, remotePath).then(() => {
             console.log(`Uploaded ${localPath}.`);
-            return new Promise(resolve => resolve());
+            return Promise.resolve();
         });
     });
     return Promise.all(uploadPromises);
