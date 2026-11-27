@@ -7,7 +7,7 @@ rules:
     no-console: ['error', { allow: ['warn', 'error'] }]
     prefer-destructuring: 'off'
     no-param-reassign: 'off'
-    zillow/jest/require-tothrow-message: 'off'
+    zillow/jest/require-to-throw-message: 'off'
     zillow/react-hooks/exhaustive-deps: 'off'
     zillow/react/no-array-index-key: 'off'
 globals:

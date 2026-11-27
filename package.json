@@ -38,7 +38,7 @@
     "concurrently": "^6.4.0",
     "env-cmd": "^10.1.0",
     "eslint": "^7.11.0",
-    "eslint-plugin-zillow": "^3.4.0",
+    "eslint-plugin-zillow": "^4.0.0",
     "express": "^4.17.1",
     "husky": "^7.0.4",
     "lint-staged": "^12.1.2",
