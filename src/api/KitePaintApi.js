@@ -120,9 +120,21 @@ class KitePaintApi {
         success('Design saved');
     }
 
-    async getProducts({ searchTerm, searchCriteria }) {
-        let path =
-            '/products.php?limit=100&return%5B%5D=id&return%5B%5D=created&return%5B%5D=embed&return%5B%5D=colors&return%5B%5D=manufacturer&return%5B%5D=name&return%5B%5D=notes&return%5B%5D=status&return%5B%5D=url&return%5B%5D=variations';
+    /**
+     * Gets products.
+     * @param {Object} options
+     * @param {String} [options.searchTerm]
+     * @param {String} [options.searchCriteria]
+     * @param {String} [options.sortBy] The column to sort by
+     * @param {String} [options.sortDirection] ASC or DESC
+     * @return {Promise<Product[]>}
+     */
+    async getProducts({ searchTerm, searchCriteria, sortBy = 'created', sortDirection = 'DESC' }) {
+        let path = `/products.php?limit=100&order%5B%5D=${encodeURIComponent(
+            sortBy
+        )}&order%5B%5D=${encodeURIComponent(
+            sortDirection
+        )}&return%5B%5D=id&return%5B%5D=created&return%5B%5D=embed&return%5B%5D=colors&return%5B%5D=manufacturer&return%5B%5D=manufacturer_name&return%5B%5D=name&return%5B%5D=notes&return%5B%5D=status&return%5B%5D=url&return%5B%5D=variations`;
         if (searchTerm && searchCriteria) {
             path += `&filter[${searchCriteria}]=${searchTerm}`;
         }

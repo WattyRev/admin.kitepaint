@@ -99,7 +99,13 @@ app.post('/api/designs.php', (request, response) => {
 
 app.get('/api/products.php', (request, response) => {
     const { query } = request;
-    let relevantProducts = products;
+    // Add the manufacturer's name, like the real API does.
+    let relevantProducts = products.map(product => ({
+        ...product,
+        manufacturer_name: (
+            manufacturers.find(manufacturer => manufacturer.id === product.manufacturer) || {}
+        ).name,
+    }));
     if (query.filter) {
         const filters = Object.entries(query.filter);
         const searchCriteria = filters[0][0];
@@ -107,6 +113,26 @@ app.get('/api/products.php', (request, response) => {
         relevantProducts = relevantProducts.filter(product =>
             product[searchCriteria].includes(searchTerm)
         );
+    }
+    if (query.order) {
+        const [column, direction] = query.order;
+        const multiplier = String(direction).toUpperCase() === 'DESC' ? -1 : 1;
+        const sortValue = product => {
+            if (column === 'created') {
+                return new Date(product.created).getTime();
+            }
+            if (column === 'manufacturer') {
+                return Number(product.manufacturer);
+            }
+            return String(product[column]).toLowerCase();
+        };
+        relevantProducts = [...relevantProducts].sort((a, b) => {
+            if (sortValue(a) === sortValue(b)) {
+                // Break ties on id, newest first, like the real API.
+                return Number(b.id) - Number(a.id);
+            }
+            return (sortValue(a) > sortValue(b) ? 1 : -1) * multiplier;
+        });
     }
     response.json(relevantProducts);
 });

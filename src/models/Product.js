@@ -9,6 +9,7 @@ const Product = createModel('Product', {
     created: '',
     embed: '',
     manufacturer: '',
+    manufacturerName: '',
     name: '',
     notes: [],
     status: 'Private',
@@ -37,7 +38,10 @@ Product.prototype.propTypes = {
     created: PropTypes.string,
     /** A list of domains separated by commas */
     embed: PropTypes.string,
+    /** The id of the product's manufacturer */
     manufacturer: PropTypes.string,
+    /** The name of the product's manufacturer */
+    manufacturerName: PropTypes.string,
     status: PropTypes.oneOf(PRODUCT_STATUSES),
     name: PropTypes.string,
     notes: PropTypes.arrayOf(PropTypes.string),
@@ -55,14 +59,26 @@ Product.prototype.propTypes = {
 export default Product;
 
 export function transformProduct(rawProduct) {
-    const { id, colors, created, embed, manufacturer, status, name, notes, url, variations } =
-        rawProduct;
+    const {
+        id,
+        colors,
+        created,
+        embed,
+        manufacturer,
+        manufacturer_name: manufacturerName,
+        status,
+        name,
+        notes,
+        url,
+        variations,
+    } = rawProduct;
     return new Product({
         id,
         colors: colors ? JSON.parse(colors) : [],
         created,
         embed,
         manufacturer,
+        manufacturerName: manufacturerName || '',
         status: PRODUCT_STATUSES[parseInt(status, 10)],
         name,
         notes: notes ? JSON.parse(notes) : [],
