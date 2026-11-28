@@ -1,6 +1,6 @@
 import React from 'react';
 import { MemoryRouter } from 'react-router-dom';
-import { fireEvent, render } from '@testing-library/react';
+import { fireEvent, render, within } from '@testing-library/react';
 import theme from 'react-watty-ui';
 import { ThemeProvider } from 'styled-components';
 import mockUsers from '../../../mock-api/data/users';
@@ -91,18 +91,23 @@ describe('Dashboard', () => {
         });
     });
 
-    it('lists the recent users with edit and reset password actions', async () => {
-        expect.assertions(3);
-        const { findAllByTestId, getAllByText } = renderDashboard();
+    it('lists the recent users with their registration date', async () => {
+        expect.assertions(4);
+        const { findAllByTestId, findByTestId, getAllByText } = renderDashboard();
         expect(await findAllByTestId('user-row')).toHaveLength(2);
-        expect(getAllByText('Edit').length).toBeGreaterThanOrEqual(2);
+        const usersTable = within(await findByTestId('recent-users-table'));
+        expect(usersTable.getByText('01/01/2021')).toBeInTheDocument();
+        expect(usersTable.queryByText('11/01/2020')).not.toBeInTheDocument();
         expect(getAllByText('Reset Password')).toHaveLength(2);
     });
 
-    it('lists the recent designs and only links to viewable ones', async () => {
-        expect.assertions(2);
-        const { findAllByTestId } = renderDashboard();
+    it('lists the recent designs with their created date and only links to viewable ones', async () => {
+        expect.assertions(4);
+        const { findAllByTestId, findByTestId } = renderDashboard();
         expect(await findAllByTestId('design-row')).toHaveLength(3);
+        const designsTable = within(await findByTestId('recent-designs-table'));
+        expect(designsTable.getAllByText('01/01/2021')).toHaveLength(3);
+        expect(designsTable.queryByText('01/02/2021')).not.toBeInTheDocument();
         // Private designs have no view link, Unlisted and Public do.
         expect(await findAllByTestId('view-link')).toHaveLength(2);
     });

@@ -8,6 +8,11 @@ const GlobalStyle = createGlobalStyle`
         overflow: hidden;
         margin: 0;
     }
+
+    /* Browsers center table headings by default, but the cells under them are left-aligned. */
+    th {
+        text-align: left;
+    }
 `;
 
 export default GlobalStyle;

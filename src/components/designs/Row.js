@@ -13,12 +13,12 @@ const ViewLink = styled(TextButton)`
 // Private designs can't be seen on the public site, so they don't get a view link.
 const VIEWABLE_STATUSES = ['Public', 'Unlisted'];
 
-const DesignsRow = ({ design, onEdit, showDates }) => (
+const DesignsRow = ({ design, onEdit, showUpdated, showCreated }) => (
     <TableRow data-testid="design-row">
         <TableCell>{design.get('id')}</TableCell>
         <TableCell>{design.get('name')}</TableCell>
-        {showDates && <TableCell>{design.get('updated')}</TableCell>}
-        {showDates && <TableCell>{design.get('created')}</TableCell>}
+        {showUpdated && <TableCell>{design.get('updated')}</TableCell>}
+        {showCreated && <TableCell>{design.get('created')}</TableCell>}
         <TableCell>{design.get('status')}</TableCell>
         <TableCell>{formatNameWithId(design.get('username'), design.get('user'))}</TableCell>
         <TableCell>{formatNameWithId(design.get('productName'), design.get('product'))}</TableCell>
@@ -43,12 +43,15 @@ const DesignsRow = ({ design, onEdit, showDates }) => (
 DesignsRow.propTypes = {
     design: PropTypes.instanceOf(Design).isRequired,
     onEdit: PropTypes.func.isRequired,
-    /** Whether to show the Updated and Created columns */
-    showDates: PropTypes.bool,
+    /** Whether to show the Updated column */
+    showUpdated: PropTypes.bool,
+    /** Whether to show the Created column */
+    showCreated: PropTypes.bool,
 };
 
 DesignsRow.defaultProps = {
-    showDates: true,
+    showUpdated: true,
+    showCreated: true,
 };
 
 export default DesignsRow;

@@ -118,6 +118,7 @@ const Dashboard = () => {
                                                     <TableHeading>ID</TableHeading>
                                                     <TableHeading>Username</TableHeading>
                                                     <TableHeading>Email</TableHeading>
+                                                    <TableHeading>Created</TableHeading>
                                                     <TableHeading>Activated</TableHeading>
                                                     <TableHeading />
                                                     <TableHeading />
@@ -128,7 +129,7 @@ const Dashboard = () => {
                                                     <UsersRow
                                                         key={user.get('loginid')}
                                                         user={user}
-                                                        showDates={false}
+                                                        showLastLogin={false}
                                                         onEdit={setEditedUser}
                                                         onSubmit={() => refresh()}
                                                     />
@@ -169,6 +170,7 @@ const Dashboard = () => {
                                                 <TableRow>
                                                     <TableHeading>ID</TableHeading>
                                                     <TableHeading>Name</TableHeading>
+                                                    <TableHeading>Created</TableHeading>
                                                     <TableHeading>Status</TableHeading>
                                                     <TableHeading>User</TableHeading>
                                                     <TableHeading>Product</TableHeading>
@@ -181,7 +183,7 @@ const Dashboard = () => {
                                                     <DesignsRow
                                                         key={design.get('id')}
                                                         design={design}
-                                                        showDates={false}
+                                                        showUpdated={false}
                                                         onEdit={setEditedDesign}
                                                     />
                                                 ))}
