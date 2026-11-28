@@ -261,8 +261,32 @@ app.get('/api/users.php', (request, response) => {
         const searchTerm = filters[0][1];
         relevantUsers = relevantUsers.filter(user => user[searchCriteria].includes(searchTerm));
     }
+    if (query.order) {
+        const [column, direction] = query.order;
+        const multiplier = String(direction).toUpperCase() === 'DESC' ? -1 : 1;
+        // Dates are MM/DD/YYYY strings, so they need to be parsed to be compared.
+        const sortValue = user => {
+            if (column === 'create_time' || column === 'last_login') {
+                return new Date(user[column]).getTime();
+            }
+            return String(user[column]).toLowerCase();
+        };
+        relevantUsers = [...relevantUsers].sort((a, b) => {
+            if (sortValue(a) === sortValue(b)) {
+                // Break ties on loginid, newest first, like the real API.
+                return Number(b.loginid) - Number(a.loginid);
+            }
+            return (sortValue(a) > sortValue(b) ? 1 : -1) * multiplier;
+        });
+    }
+    const total = relevantUsers.length;
     if (query.limit) {
-        relevantUsers = relevantUsers.slice(0, Number(query.limit));
+        const skip = Number(query.skip || 0);
+        relevantUsers = relevantUsers.slice(skip, skip + Number(query.limit));
+    }
+    if (query.includeTotal) {
+        response.json({ data: relevantUsers, total });
+        return;
     }
     response.json(relevantUsers);
 });

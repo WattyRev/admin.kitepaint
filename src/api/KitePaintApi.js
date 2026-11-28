@@ -251,9 +251,31 @@ class KitePaintApi {
         success('Manufacturer saved');
     }
 
-    async getUsers({ searchTerm, searchCriteria }) {
-        let path =
-            '/users.php?return%5B%5D=loginid&return%5B%5D=username&return%5B%5D=create_time&return%5B%5D=last_login&return%5B%5D=email&return%5B%5D=activated&limit=100';
+    /**
+     * Gets one page of users.
+     * @param {Object} options
+     * @param {String} [options.searchTerm]
+     * @param {String} [options.searchCriteria]
+     * @param {String} [options.sortBy] The column to sort by
+     * @param {String} [options.sortDirection] ASC or DESC
+     * @param {Number} [options.page] The 1-based page number
+     * @param {Number} [options.pageSize]
+     * @return {Promise<{users: Array, total: Number}>}
+     */
+    async getUsers({
+        searchTerm,
+        searchCriteria,
+        sortBy = 'last_login',
+        sortDirection = 'DESC',
+        page = 1,
+        pageSize = 100,
+    } = {}) {
+        const skip = (page - 1) * pageSize;
+        let path = `/users.php?limit=${pageSize}&skip=${skip}&includeTotal=1&order%5B%5D=${encodeURIComponent(
+            sortBy
+        )}&order%5B%5D=${encodeURIComponent(
+            sortDirection
+        )}&return%5B%5D=loginid&return%5B%5D=username&return%5B%5D=create_time&return%5B%5D=last_login&return%5B%5D=email&return%5B%5D=activated`;
         if (searchTerm && searchCriteria) {
             path += `&filter[${searchCriteria}]=${searchTerm}`;
         }
@@ -261,8 +283,13 @@ class KitePaintApi {
             error('Failed to get users');
             return Promise.reject();
         });
-        const transformedUsers = response.data.map(transformUser);
-        return transformedUsers;
+        // Older API deployments return a bare array instead of { data, total }.
+        const rows = Array.isArray(response.data) ? response.data : response.data.data;
+        const total = Array.isArray(response.data) ? rows.length : response.data.total;
+        return {
+            users: rows.map(transformUser),
+            total,
+        };
     }
 
     /**
