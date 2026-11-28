@@ -6,13 +6,13 @@ import {
     TableHeading,
     TableRow,
     Select,
-    Input,
     H1,
     Spacer,
     TextButton,
 } from 'react-watty-ui';
 import PageWrapper from './ui/PageWrapper';
 import SearchWrapper from './ui/SearchWrapper';
+import SearchInput from './ui/SearchInput';
 import DesignsData from './designs/Data';
 import DesignsEdit from './designs/Edit';
 import DesignsRow from './designs/Row';
@@ -78,19 +78,18 @@ const Designs = () => {
                                     value={searchCriteria}
                                     onChange={e => search(e.target.value, searchTerm)}
                                 >
-                                    <option>Search By</option>
-                                    <option value="id">ID</option>
                                     <option value="name">Name</option>
+                                    <option value="id">ID</option>
                                     <option value="user">User ID</option>
                                     <option value="username">User Name</option>
                                     <option value="product">Product ID</option>
                                     <option value="product_name">Product Name</option>
                                 </Select>
-                                <Input
+                                <SearchInput
                                     data-testid="search-term"
                                     value={searchTerm}
-                                    onChange={e => setSearchTerm(e.target.value)}
-                                    onBlur={e => search(searchCriteria, e.target.value)}
+                                    onValueChange={setSearchTerm}
+                                    onSearch={term => search(searchCriteria, term)}
                                     placeholder="Search"
                                 />
                             </SearchWrapper>

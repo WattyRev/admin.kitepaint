@@ -1,5 +1,5 @@
 import React from 'react';
-import { fireEvent } from '@testing-library/react';
+import { act, fireEvent } from '@testing-library/react';
 import Design from '../../models/Design';
 import DesignsData from '../designs/Data';
 import Designs from '../Designs';
@@ -10,7 +10,7 @@ describe('Designs', () => {
     let designsDataResponse;
     beforeEach(() => {
         designsDataResponse = {
-            searchCriteria: '',
+            searchCriteria: 'name',
             searchTerm: '',
             designs: [],
             isLoading: false,
@@ -40,24 +40,14 @@ describe('Designs', () => {
             const criteriaElement = getByTestId('search-criteria');
             fireEvent.change(criteriaElement, {
                 target: {
-                    value: 'name',
+                    value: 'user',
                 },
             });
-            expect(designsDataResponse.search).toHaveBeenCalledWith('name', '');
+            expect(designsDataResponse.search).toHaveBeenCalledWith('user', '');
         });
-        it('triggers search when the term blurs', () => {
-            expect.assertions(1);
-            const { getByTestId } = renderWithTheme(<Designs />);
-            const termElement = getByTestId('search-term');
-            fireEvent.blur(termElement, {
-                target: {
-                    value: 'boogers',
-                },
-            });
-            expect(designsDataResponse.search).toHaveBeenCalledWith('', 'boogers');
-        });
-        it('does not trigger search when the term changes', () => {
-            expect.assertions(1);
+        it('triggers a search 300ms after the term changes', () => {
+            expect.assertions(2);
+            jest.useFakeTimers();
             const { getByTestId } = renderWithTheme(<Designs />);
             const termElement = getByTestId('search-term');
             fireEvent.change(termElement, {
@@ -65,7 +55,30 @@ describe('Designs', () => {
                     value: 'boogers',
                 },
             });
+            act(() => {
+                jest.advanceTimersByTime(299);
+            });
             expect(designsDataResponse.search).not.toHaveBeenCalled();
+            act(() => {
+                jest.advanceTimersByTime(1);
+            });
+            expect(designsDataResponse.search).toHaveBeenCalledWith('name', 'boogers');
+            jest.useRealTimers();
+        });
+        it('does not trigger a search when the term blurs', () => {
+            expect.assertions(1);
+            jest.useFakeTimers();
+            const { getByTestId } = renderWithTheme(<Designs />);
+            fireEvent.blur(getByTestId('search-term'), {
+                target: {
+                    value: 'boogers',
+                },
+            });
+            act(() => {
+                jest.advanceTimersByTime(1000);
+            });
+            expect(designsDataResponse.search).not.toHaveBeenCalled();
+            jest.useRealTimers();
         });
         it('sets the search term when it changes', () => {
             expect.assertions(1);

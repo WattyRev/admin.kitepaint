@@ -1,5 +1,5 @@
 import React from 'react';
-import { fireEvent } from '@testing-library/react';
+import { act, fireEvent } from '@testing-library/react';
 import mockUsers from '../../../mock-api/data/users';
 import { transformUser } from '../../models/User';
 import api from '../../api/KitePaintApi';
@@ -27,23 +27,17 @@ describe('Users', () => {
         const { findAllByTestId } = renderWithTheme(<Users />);
         expect(await findAllByTestId('user-row')).toHaveLength(mockUsers.length);
     });
-    it('can search users', () => {
+    it('searches by username by default, as the user types', () => {
         expect.assertions(1);
-        const { getByTestId, getByPlaceholderText } = renderWithTheme(<Users />);
-        fireEvent.change(getByTestId('search-criteria'), {
-            target: {
-                value: 'username',
-            },
-        });
+        jest.useFakeTimers();
+        const { getByPlaceholderText } = renderWithTheme(<Users />);
         fireEvent.change(getByPlaceholderText('Search'), {
             target: {
                 value: 'test',
             },
         });
-        fireEvent.blur(getByPlaceholderText('Search'), {
-            target: {
-                value: 'test',
-            },
+        act(() => {
+            jest.advanceTimersByTime(300);
         });
         expect(api.getUsers).toHaveBeenCalledWith({
             searchCriteria: 'username',
@@ -53,6 +47,34 @@ describe('Users', () => {
             page: 1,
             pageSize: 100,
         });
+        jest.useRealTimers();
+    });
+    it('can search users by another field', () => {
+        expect.assertions(1);
+        jest.useFakeTimers();
+        const { getByTestId, getByPlaceholderText } = renderWithTheme(<Users />);
+        fireEvent.change(getByTestId('search-criteria'), {
+            target: {
+                value: 'email',
+            },
+        });
+        fireEvent.change(getByPlaceholderText('Search'), {
+            target: {
+                value: 'test',
+            },
+        });
+        act(() => {
+            jest.advanceTimersByTime(300);
+        });
+        expect(api.getUsers).toHaveBeenCalledWith({
+            searchCriteria: 'email',
+            searchTerm: 'test',
+            sortBy: 'last_login',
+            sortDirection: 'DESC',
+            page: 1,
+            pageSize: 100,
+        });
+        jest.useRealTimers();
     });
     it('sorts by last login, newest first, by default', async () => {
         expect.assertions(3);
