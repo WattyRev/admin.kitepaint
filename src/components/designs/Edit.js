@@ -1,9 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { Modal, ModalClose, Label, Input, Select, Button } from 'react-watty-ui';
+import { Label, Input, Select, Button } from 'react-watty-ui';
 import api from '../../api/KitePaintApi';
 import Design, { DESIGN_STATUSES, formatNameWithId } from '../../models/Design';
 import Lookup from '../ui/Lookup';
+import DirtyReporter from '../ui/DirtyReporter';
+import DismissibleModal from '../ui/DismissibleModal';
+import isModelDirty from '../ui/isModelDirty';
 import DesignsEditData from './edit/Data';
 
 /** Finds users by id or username, in the shape that Lookup expects. */
@@ -16,102 +19,108 @@ async function searchUsers(term) {
     }));
 }
 
-const DesignsEdit = ({ design, onClose, onSubmit }) => (
-    <Modal isOpen={design !== null} onBackdropClick={onClose}>
-        {design && (
-            <DesignsEditData
-                design={design}
-                onSubmit={() => {
-                    onSubmit();
-                    onClose();
-                }}
-            >
-                {({ editedDesign, setEditedDesign, submit, isSubmitting }) => (
-                    <form
-                        data-testid="design-form"
-                        onSubmit={e => {
-                            e.preventDefault();
-                            if (!isSubmitting) {
-                                submit();
-                            }
-                        }}
-                    >
-                        <ModalClose data-testid="close-modal" onClick={onClose} />
-                        <Label>ID</Label>
-                        <Input readOnly value={editedDesign.get('id')} />
-                        <Label htmlFor="name">Name</Label>
-                        <Input
-                            id="name"
-                            required
-                            value={editedDesign.get('name')}
-                            onChange={e =>
-                                setEditedDesign(editedDesign.set('name', e.target.value))
-                            }
-                        />
-                        <Label>Updated</Label>
-                        <Input readOnly value={editedDesign.get('updated')} />
-                        <Label>Created</Label>
-                        <Input readOnly value={editedDesign.get('created')} />
-                        <Label htmlFor="status">Status</Label>
-                        <Select
-                            id="status"
-                            value={editedDesign.get('status')}
-                            onChange={e =>
-                                setEditedDesign(editedDesign.set('status', e.target.value))
-                            }
+const DesignsEdit = ({ design, onClose, onSubmit }) => {
+    const [isDirty, setIsDirty] = useState(false);
+    return (
+        <DismissibleModal isOpen={design !== null} isDirty={isDirty} onClose={onClose}>
+            {design && (
+                <DesignsEditData
+                    design={design}
+                    onSubmit={() => {
+                        onSubmit();
+                        onClose();
+                    }}
+                >
+                    {({ editedDesign, setEditedDesign, submit, isSubmitting }) => (
+                        <form
+                            data-testid="design-form"
+                            onSubmit={e => {
+                                e.preventDefault();
+                                if (!isSubmitting) {
+                                    submit();
+                                }
+                            }}
                         >
-                            {DESIGN_STATUSES.map(status => (
-                                <option value={status} key={status}>
-                                    {status}
-                                </option>
-                            ))}
-                        </Select>
-                        <Label htmlFor="user">User</Label>
-                        <Lookup
-                            id="user"
-                            required
-                            placeholder="Search by user ID or username"
-                            label={formatNameWithId(
-                                editedDesign.get('username'),
-                                editedDesign.get('user')
-                            )}
-                            search={searchUsers}
-                            onSelect={(userId, username) =>
-                                setEditedDesign(
-                                    editedDesign.set('user', userId).set('username', username)
-                                )
-                            }
-                        />
-                        <Label>Product</Label>
-                        <Input
-                            readOnly
-                            value={formatNameWithId(
-                                editedDesign.get('productName'),
-                                editedDesign.get('product')
-                            )}
-                        />
-                        <Label htmlFor="active">Active</Label>
-                        <Select
-                            id="active"
-                            value={editedDesign.get('active')?.toString() || ''}
-                            onChange={e =>
-                                setEditedDesign(
-                                    editedDesign.set('active', e.target.value === 'true')
-                                )
-                            }
-                        >
-                            <option value="true">True</option>
-                            <option value="false">False</option>
-                        </Select>
-                        <Button type="submit" isPrimary disabled={isSubmitting}>
-                            Save
-                        </Button>
-                    </form>
-                )}
-            </DesignsEditData>
-        )}
-    </Modal>
-);
+                            <DirtyReporter
+                                isDirty={isModelDirty(design, editedDesign)}
+                                onChange={setIsDirty}
+                            />
+                            <Label>ID</Label>
+                            <Input readOnly value={editedDesign.get('id')} />
+                            <Label htmlFor="name">Name</Label>
+                            <Input
+                                id="name"
+                                required
+                                value={editedDesign.get('name')}
+                                onChange={e =>
+                                    setEditedDesign(editedDesign.set('name', e.target.value))
+                                }
+                            />
+                            <Label>Updated</Label>
+                            <Input readOnly value={editedDesign.get('updated')} />
+                            <Label>Created</Label>
+                            <Input readOnly value={editedDesign.get('created')} />
+                            <Label htmlFor="status">Status</Label>
+                            <Select
+                                id="status"
+                                value={editedDesign.get('status')}
+                                onChange={e =>
+                                    setEditedDesign(editedDesign.set('status', e.target.value))
+                                }
+                            >
+                                {DESIGN_STATUSES.map(status => (
+                                    <option value={status} key={status}>
+                                        {status}
+                                    </option>
+                                ))}
+                            </Select>
+                            <Label htmlFor="user">User</Label>
+                            <Lookup
+                                id="user"
+                                required
+                                placeholder="Search by user ID or username"
+                                label={formatNameWithId(
+                                    editedDesign.get('username'),
+                                    editedDesign.get('user')
+                                )}
+                                search={searchUsers}
+                                onSelect={(userId, username) =>
+                                    setEditedDesign(
+                                        editedDesign.set('user', userId).set('username', username)
+                                    )
+                                }
+                            />
+                            <Label>Product</Label>
+                            <Input
+                                readOnly
+                                value={formatNameWithId(
+                                    editedDesign.get('productName'),
+                                    editedDesign.get('product')
+                                )}
+                            />
+                            <Label htmlFor="active">Active</Label>
+                            <Select
+                                id="active"
+                                value={editedDesign.get('active')?.toString() || ''}
+                                onChange={e =>
+                                    setEditedDesign(
+                                        editedDesign.set('active', e.target.value === 'true')
+                                    )
+                                }
+                            >
+                                <option value="true">True</option>
+                                <option value="false">False</option>
+                            </Select>
+                            <Button type="submit" isPrimary disabled={isSubmitting}>
+                                Save
+                            </Button>
+                        </form>
+                    )}
+                </DesignsEditData>
+            )}
+        </DismissibleModal>
+    );
+};
 
 DesignsEdit.propTypes = {
     /** The design being edited */

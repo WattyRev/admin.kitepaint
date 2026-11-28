@@ -110,7 +110,9 @@ describe('DesignsEdit', () => {
         const { getByLabelText, getByText, findByTestId } = renderWithTheme(
             <DesignsEdit {...defaultProps} />
         );
-        fireEvent.change(getByLabelText('User'), { target: { value: 'voidl' } });
+        fireEvent.change(getByLabelText('User'), {
+            target: { value: 'voidl' },
+        });
         fireEvent.mouseDown(await findByTestId('lookup-result'));
         expect(getByLabelText('User')).toHaveValue('Voidling (13)');
         fireEvent.click(getByText('Save'));
@@ -125,5 +127,29 @@ describe('DesignsEdit', () => {
         fireEvent.click(getByText('Save'));
         fireEvent.click(getByText('Save'));
         expect(api.updateDesign).toHaveBeenCalledTimes(1);
+    });
+    it('closes immediately on Escape when nothing has changed', () => {
+        expect.assertions(2);
+        jest.spyOn(window, 'confirm').mockReturnValue(true);
+        renderWithTheme(<DesignsEdit {...defaultProps} />);
+        fireEvent.keyDown(document, { key: 'Escape' });
+        expect(window.confirm).not.toHaveBeenCalled();
+        expect(defaultProps.onClose).toHaveBeenCalledTimes(1);
+        window.confirm.mockRestore();
+    });
+    it('confirms before closing on Escape when there are changes', () => {
+        expect.assertions(3);
+        jest.spyOn(window, 'confirm').mockReturnValue(false);
+        const { getByLabelText } = renderWithTheme(<DesignsEdit {...defaultProps} />);
+        fireEvent.change(getByLabelText('Name'), {
+            target: { value: 'changed' },
+        });
+        fireEvent.keyDown(document, { key: 'Escape' });
+        expect(window.confirm).toHaveBeenCalledTimes(1);
+        expect(defaultProps.onClose).not.toHaveBeenCalled();
+        window.confirm.mockReturnValue(true);
+        fireEvent.keyDown(document, { key: 'Escape' });
+        expect(defaultProps.onClose).toHaveBeenCalledTimes(1);
+        window.confirm.mockRestore();
     });
 });

@@ -1,15 +1,22 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { Modal, ModalClose } from 'react-watty-ui';
 import Manufacturer from '../../models/Manufacturer';
+import DismissibleModal from '../ui/DismissibleModal';
+import isModelDirty from '../ui/isModelDirty';
 import ManufacturersCreateData from './create/Data';
 import ManufacturersForm from './Form';
 
 const ManufacturersCreate = ({ isOpen, onClose, onSubmit }) => {
     const [manufacturer, setManufacturer] = useState(new Manufacturer());
     return (
-        <Modal isOpen={isOpen} onBackdropClick={onClose}>
-            <ModalClose data-testid="close-modal" onClick={onClose} />
+        <DismissibleModal
+            isOpen={isOpen}
+            isDirty={isModelDirty(new Manufacturer(), manufacturer)}
+            onClose={() => {
+                setManufacturer(new Manufacturer());
+                onClose();
+            }}
+        >
             {isOpen && (
                 <ManufacturersCreateData
                     onSubmit={() => {
@@ -28,7 +35,7 @@ const ManufacturersCreate = ({ isOpen, onClose, onSubmit }) => {
                     )}
                 </ManufacturersCreateData>
             )}
-        </Modal>
+        </DismissibleModal>
     );
 };
 

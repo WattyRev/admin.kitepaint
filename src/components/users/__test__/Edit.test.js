@@ -77,4 +77,28 @@ describe('UsersEdit', () => {
         fireEvent.click(getByText('Save'));
         expect(api.updateUser).toHaveBeenCalledTimes(1);
     });
+    it('closes immediately on Escape when nothing has changed', () => {
+        expect.assertions(2);
+        jest.spyOn(window, 'confirm').mockReturnValue(true);
+        renderWithTheme(<UsersEdit {...defaultProps} />);
+        fireEvent.keyDown(document, { key: 'Escape' });
+        expect(window.confirm).not.toHaveBeenCalled();
+        expect(defaultProps.onClose).toHaveBeenCalledTimes(1);
+        window.confirm.mockRestore();
+    });
+    it('confirms before closing on Escape when there are changes', () => {
+        expect.assertions(3);
+        jest.spyOn(window, 'confirm').mockReturnValue(false);
+        const { getByLabelText } = renderWithTheme(<UsersEdit {...defaultProps} />);
+        fireEvent.change(getByLabelText('Username'), {
+            target: { value: 'changed' },
+        });
+        fireEvent.keyDown(document, { key: 'Escape' });
+        expect(window.confirm).toHaveBeenCalledTimes(1);
+        expect(defaultProps.onClose).not.toHaveBeenCalled();
+        window.confirm.mockReturnValue(true);
+        fireEvent.keyDown(document, { key: 'Escape' });
+        expect(defaultProps.onClose).toHaveBeenCalledTimes(1);
+        window.confirm.mockRestore();
+    });
 });
