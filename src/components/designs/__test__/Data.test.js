@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, fireEvent } from '@testing-library/react';
+import { render, fireEvent, waitFor, act } from '@testing-library/react';
 import api from '../../../api/KitePaintApi';
 import Design from '../../../models/Design';
 import DesignsData from '../Data';
@@ -8,7 +8,7 @@ jest.mock('../../../api/KitePaintApi');
 
 describe('DesignsData', () => {
     beforeEach(() => {
-        api.getDesigns.mockResolvedValue([]);
+        api.getDesigns.mockResolvedValue({ designs: [], total: 0 });
     });
     it('renders', () => {
         expect.assertions(1);
@@ -20,12 +20,15 @@ describe('DesignsData', () => {
     });
     it('provides designs fetched from the API', async () => {
         expect.assertions(1);
-        api.getDesigns.mockResolvedValue([
-            new Design({
-                id: '1',
-                name: 'boogers',
-            }),
-        ]);
+        api.getDesigns.mockResolvedValue({
+            designs: [
+                new Design({
+                    id: '1',
+                    name: 'boogers',
+                }),
+            ],
+            total: 1,
+        });
         const { findByText } = render(
             <DesignsData>
                 {({ designs }) =>
@@ -37,12 +40,15 @@ describe('DesignsData', () => {
     });
     it('sets isLoading to true while waiting for data', async () => {
         expect.assertions(3);
-        api.getDesigns.mockResolvedValue([
-            new Design({
-                id: '1',
-                name: 'boogers',
-            }),
-        ]);
+        api.getDesigns.mockResolvedValue({
+            designs: [
+                new Design({
+                    id: '1',
+                    name: 'boogers',
+                }),
+            ],
+            total: 1,
+        });
         const { getByTestId, findByTestId } = render(
             <DesignsData>
                 {({ isLoading }) => (
@@ -59,12 +65,15 @@ describe('DesignsData', () => {
     });
     it('sets isLoading to false when data is retrieved', async () => {
         expect.assertions(2);
-        api.getDesigns.mockResolvedValue([
-            new Design({
-                id: '1',
-                name: 'boogers',
-            }),
-        ]);
+        api.getDesigns.mockResolvedValue({
+            designs: [
+                new Design({
+                    id: '1',
+                    name: 'boogers',
+                }),
+            ],
+            total: 1,
+        });
         const { findByTestId } = render(
             <DesignsData>
                 {({ isLoading }) => (
@@ -129,6 +138,123 @@ describe('DesignsData', () => {
         expect(api.getDesigns).toHaveBeenCalledWith({
             searchCriteria: 'name',
             searchTerm: 'boogers',
+            sortBy: 'created',
+            sortDirection: 'DESC',
+            page: 1,
+            pageSize: 100,
+        });
+    });
+
+    describe('sorting and pagination', () => {
+        const renderData = () => {
+            let latest;
+            render(
+                <DesignsData>
+                    {data => {
+                        latest = data;
+                        return null;
+                    }}
+                </DesignsData>
+            );
+            return () => latest;
+        };
+
+        it('fetches the first page sorted by created, newest first, by default', async () => {
+            renderData();
+            await waitFor(() =>
+                expect(api.getDesigns).toHaveBeenCalledWith(
+                    expect.objectContaining({
+                        sortBy: 'created',
+                        sortDirection: 'DESC',
+                        page: 1,
+                    })
+                )
+            );
+        });
+
+        it('sorts a new column using its default direction', async () => {
+            const getData = renderData();
+            await waitFor(() => expect(getData().isLoading).toBe(false));
+            await act(async () => {
+                await getData().sort('name');
+            });
+            expect(api.getDesigns).toHaveBeenLastCalledWith(
+                expect.objectContaining({ sortBy: 'name', sortDirection: 'ASC', page: 1 })
+            );
+            expect(getData().sortBy).toBe('name');
+        });
+
+        it('reverses the direction when the active column is sorted again', async () => {
+            const getData = renderData();
+            await waitFor(() => expect(getData().isLoading).toBe(false));
+            await act(async () => {
+                await getData().sort('created');
+            });
+            expect(api.getDesigns).toHaveBeenLastCalledWith(
+                expect.objectContaining({ sortBy: 'created', sortDirection: 'ASC' })
+            );
+            await act(async () => {
+                await getData().sort('created');
+            });
+            expect(api.getDesigns).toHaveBeenLastCalledWith(
+                expect.objectContaining({ sortBy: 'created', sortDirection: 'DESC' })
+            );
+        });
+
+        it('calculates the total pages from the total', async () => {
+            api.getDesigns.mockResolvedValue({ designs: [], total: 250 });
+            const getData = renderData();
+            await waitFor(() => expect(getData().totalPages).toBe(3));
+        });
+
+        it('fetches the requested page', async () => {
+            api.getDesigns.mockResolvedValue({ designs: [], total: 250 });
+            const getData = renderData();
+            await waitFor(() => expect(getData().totalPages).toBe(3));
+            await act(async () => {
+                await getData().setPage(2);
+            });
+            expect(api.getDesigns).toHaveBeenLastCalledWith(expect.objectContaining({ page: 2 }));
+            expect(getData().page).toBe(2);
+        });
+
+        it('keeps the page and sort when refreshing', async () => {
+            api.getDesigns.mockResolvedValue({ designs: [], total: 250 });
+            const getData = renderData();
+            await waitFor(() => expect(getData().totalPages).toBe(3));
+            await act(async () => {
+                await getData().setPage(2);
+            });
+            await act(async () => {
+                await getData().refresh();
+            });
+            expect(api.getDesigns).toHaveBeenLastCalledWith(
+                expect.objectContaining({ page: 2, sortBy: 'created', sortDirection: 'DESC' })
+            );
+        });
+
+        it('returns to the first page when sorting or searching', async () => {
+            api.getDesigns.mockResolvedValue({ designs: [], total: 250 });
+            const getData = renderData();
+            await waitFor(() => expect(getData().totalPages).toBe(3));
+            await act(async () => {
+                await getData().setPage(3);
+            });
+            await act(async () => {
+                await getData().sort('name');
+            });
+            expect(api.getDesigns).toHaveBeenLastCalledWith(
+                expect.objectContaining({ page: 1, sortBy: 'name' })
+            );
+            await act(async () => {
+                await getData().setPage(2);
+            });
+            await act(async () => {
+                await getData().search('name', 'boogers');
+            });
+            expect(api.getDesigns).toHaveBeenLastCalledWith(
+                expect.objectContaining({ page: 1, searchTerm: 'boogers' })
+            );
         });
     });
 });

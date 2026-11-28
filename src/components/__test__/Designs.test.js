@@ -16,6 +16,14 @@ describe('Designs', () => {
             isLoading: false,
             setSearchTerm: jest.fn(),
             search: jest.fn(),
+            sortBy: 'created',
+            sortDirection: 'DESC',
+            sort: jest.fn(),
+            page: 1,
+            pageSize: 100,
+            total: 0,
+            totalPages: 1,
+            setPage: jest.fn(),
         };
         DesignsData.mockImplementation(({ children }) => children(designsDataResponse));
     });
@@ -69,6 +77,56 @@ describe('Designs', () => {
                 },
             });
             expect(designsDataResponse.setSearchTerm).toHaveBeenCalledWith('boogers');
+        });
+    });
+    describe('Sorting', () => {
+        it('sorts by the clicked column', () => {
+            expect.assertions(3);
+            const { getByTestId } = renderWithTheme(<Designs />);
+            fireEvent.click(getByTestId('sort-name'));
+            fireEvent.click(getByTestId('sort-updated'));
+            fireEvent.click(getByTestId('sort-created'));
+            expect(designsDataResponse.sort).toHaveBeenCalledWith('name');
+            expect(designsDataResponse.sort).toHaveBeenCalledWith('updated');
+            expect(designsDataResponse.sort).toHaveBeenCalledWith('created');
+        });
+        it('indicates the active sort column and direction', () => {
+            expect.assertions(3);
+            const { getByTestId } = renderWithTheme(<Designs />);
+            expect(getByTestId('sort-created').closest('th')).toHaveAttribute(
+                'aria-sort',
+                'descending'
+            );
+            expect(getByTestId('sort-created')).toHaveTextContent('\u25BC');
+            expect(getByTestId('sort-name').closest('th')).toHaveAttribute('aria-sort', 'none');
+        });
+        it('indicates an ascending sort', () => {
+            expect.assertions(2);
+            designsDataResponse.sortBy = 'name';
+            designsDataResponse.sortDirection = 'ASC';
+            const { getByTestId } = renderWithTheme(<Designs />);
+            expect(getByTestId('sort-name').closest('th')).toHaveAttribute(
+                'aria-sort',
+                'ascending'
+            );
+            expect(getByTestId('sort-name')).toHaveTextContent('\u25B2');
+        });
+    });
+    describe('Pagination', () => {
+        it('does not render pagination when there is only one page', () => {
+            expect.assertions(1);
+            const { queryByTestId } = renderWithTheme(<Designs />);
+            expect(queryByTestId('pagination')).toBeNull();
+        });
+        it('changes the page when a pagination button is clicked', () => {
+            expect.assertions(2);
+            designsDataResponse.total = 250;
+            designsDataResponse.totalPages = 3;
+            const { getByLabelText } = renderWithTheme(<Designs />);
+            fireEvent.click(getByLabelText('Next page'));
+            expect(designsDataResponse.setPage).toHaveBeenCalledWith(2);
+            fireEvent.click(getByLabelText('Page 3'));
+            expect(designsDataResponse.setPage).toHaveBeenCalledWith(3);
         });
     });
     describe('Loading', () => {

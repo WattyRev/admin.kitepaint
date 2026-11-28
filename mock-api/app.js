@@ -47,6 +47,25 @@ app.get('/api/designs.php', (request, response) => {
             design[searchCriteria].includes(searchTerm)
         );
     }
+    if (query.order) {
+        const [column, direction] = query.order;
+        const multiplier = String(direction).toUpperCase() === 'DESC' ? -1 : 1;
+        relevantDesigns = [...relevantDesigns].sort((a, b) => {
+            if (a[column] === b[column]) {
+                return 0;
+            }
+            return (a[column] > b[column] ? 1 : -1) * multiplier;
+        });
+    }
+    const total = relevantDesigns.length;
+    if (query.limit) {
+        const skip = Number(query.skip || 0);
+        relevantDesigns = relevantDesigns.slice(skip, skip + Number(query.limit));
+    }
+    if (query.includeTotal) {
+        response.json({ data: relevantDesigns, total });
+        return;
+    }
     response.json(relevantDesigns);
 });
 

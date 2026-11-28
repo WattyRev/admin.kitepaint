@@ -61,9 +61,31 @@ class KitePaintApi {
         return this.axiosInstance.get(path);
     }
 
-    async getDesigns({ searchTerm, searchCriteria }) {
-        let path =
-            '/designs.php?limit=100&return%5B%5D=id&return%5B%5D=active&return%5B%5D=created&return%5B%5D=user&return%5B%5D=status&return%5B%5D=name&return%5B%5D=product&return%5B%5D=updated';
+    /**
+     * Gets one page of designs.
+     * @param {Object} options
+     * @param {String} [options.searchTerm]
+     * @param {String} [options.searchCriteria]
+     * @param {String} [options.sortBy] The column to sort by
+     * @param {String} [options.sortDirection] ASC or DESC
+     * @param {Number} [options.page] The 1-based page number
+     * @param {Number} [options.pageSize]
+     * @return {Promise<{designs: Array, total: Number}>}
+     */
+    async getDesigns({
+        searchTerm,
+        searchCriteria,
+        sortBy = 'created',
+        sortDirection = 'DESC',
+        page = 1,
+        pageSize = 100,
+    } = {}) {
+        const skip = (page - 1) * pageSize;
+        let path = `/designs.php?limit=${pageSize}&skip=${skip}&includeTotal=1&order%5B%5D=${encodeURIComponent(
+            sortBy
+        )}&order%5B%5D=${encodeURIComponent(
+            sortDirection
+        )}&return%5B%5D=id&return%5B%5D=active&return%5B%5D=created&return%5B%5D=user&return%5B%5D=status&return%5B%5D=name&return%5B%5D=product&return%5B%5D=updated`;
         if (searchTerm && searchCriteria) {
             path += `&filter[${searchCriteria}]=${searchTerm}`;
         }
@@ -71,8 +93,13 @@ class KitePaintApi {
             error('Failed to get designs');
             return Promise.reject();
         });
-        const transformedDesigns = response.data.map(transformDesign);
-        return transformedDesigns;
+        // Older API deployments return a bare array instead of { data, total }.
+        const rows = Array.isArray(response.data) ? response.data : response.data.data;
+        const total = Array.isArray(response.data) ? rows.length : response.data.total;
+        return {
+            designs: rows.map(transformDesign),
+            total,
+        };
     }
 
     async updateDesign(design) {
