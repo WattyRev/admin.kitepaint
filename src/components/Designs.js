@@ -14,6 +14,7 @@ import {
 } from 'react-watty-ui';
 import PageWrapper from './ui/PageWrapper';
 import SearchWrapper from './ui/SearchWrapper';
+import { formatNameWithId } from '../models/Design';
 import DesignsData from './designs/Data';
 import DesignsEdit from './designs/Edit';
 import Pagination from './ui/Pagination';
@@ -82,7 +83,9 @@ const Designs = () => {
                                     <option value="id">ID</option>
                                     <option value="name">Name</option>
                                     <option value="user">User ID</option>
+                                    <option value="username">User Name</option>
                                     <option value="product">Product ID</option>
+                                    <option value="product_name">Product Name</option>
                                 </Select>
                                 <Input
                                     data-testid="search-term"
@@ -102,8 +105,8 @@ const Designs = () => {
                                             {renderSortableHeading('updated', 'Updated')}
                                             {renderSortableHeading('created', 'Created')}
                                             <TableHeading>Status</TableHeading>
-                                            <TableHeading>User ID</TableHeading>
-                                            <TableHeading>Product ID</TableHeading>
+                                            <TableHeading>User</TableHeading>
+                                            <TableHeading>Product</TableHeading>
                                             <TableHeading>Active</TableHeading>
                                             <TableHeading />
                                         </TableRow>
@@ -119,8 +122,18 @@ const Designs = () => {
                                                 <TableCell>{design.get('updated')}</TableCell>
                                                 <TableCell>{design.get('created')}</TableCell>
                                                 <TableCell>{design.get('status')}</TableCell>
-                                                <TableCell>{design.get('user')}</TableCell>
-                                                <TableCell>{design.get('product')}</TableCell>
+                                                <TableCell>
+                                                    {formatNameWithId(
+                                                        design.get('username'),
+                                                        design.get('user')
+                                                    )}
+                                                </TableCell>
+                                                <TableCell>
+                                                    {formatNameWithId(
+                                                        design.get('productName'),
+                                                        design.get('product')
+                                                    )}
+                                                </TableCell>
                                                 <TableCell>
                                                     {design.get('active') ? 'True' : 'False'}
                                                 </TableCell>

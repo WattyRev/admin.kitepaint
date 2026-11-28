@@ -38,13 +38,20 @@ app.get('/api/ping.php', (request, response) => {
 
 app.get('/api/designs.php', (request, response) => {
     const { query } = request;
-    let relevantDesigns = designs;
+    // Add the owner's username and the product's name, like the real API does.
+    let relevantDesigns = designs.map(design => ({
+        ...design,
+        username: (users.find(user => user.loginid === design.user) || {}).username,
+        product_name: (products.find(product => product.id === design.product) || {}).name,
+    }));
     if (query.filter) {
         const filters = Object.entries(query.filter);
         const searchCriteria = filters[0][0];
-        const searchTerm = filters[0][1];
+        const searchTerm = String(filters[0][1]).toLowerCase();
         relevantDesigns = relevantDesigns.filter(design =>
-            design[searchCriteria].includes(searchTerm)
+            String(design[searchCriteria] || '')
+                .toLowerCase()
+                .includes(searchTerm)
         );
     }
     if (query.order) {
@@ -216,11 +223,20 @@ app.post('/api/manufacturers.php', (request, response) => {
 app.get('/api/users.php', (request, response) => {
     const { query } = request;
     let relevantUsers = users;
+    if (query.search) {
+        const term = String(query.search).toLowerCase();
+        relevantUsers = relevantUsers.filter(
+            user => user.loginid === query.search || user.username.toLowerCase().includes(term)
+        );
+    }
     if (query.filter) {
         const filters = Object.entries(query.filter);
         const searchCriteria = filters[0][0];
         const searchTerm = filters[0][1];
         relevantUsers = relevantUsers.filter(user => user[searchCriteria].includes(searchTerm));
+    }
+    if (query.limit) {
+        relevantUsers = relevantUsers.slice(0, Number(query.limit));
     }
     response.json(relevantUsers);
 });

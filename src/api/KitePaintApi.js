@@ -85,7 +85,7 @@ class KitePaintApi {
             sortBy
         )}&order%5B%5D=${encodeURIComponent(
             sortDirection
-        )}&return%5B%5D=id&return%5B%5D=active&return%5B%5D=created&return%5B%5D=user&return%5B%5D=status&return%5B%5D=name&return%5B%5D=product&return%5B%5D=updated`;
+        )}&return%5B%5D=id&return%5B%5D=active&return%5B%5D=created&return%5B%5D=user&return%5B%5D=status&return%5B%5D=name&return%5B%5D=product&return%5B%5D=updated&return%5B%5D=username&return%5B%5D=product_name`;
         if (searchTerm && searchCriteria) {
             path += `&filter[${searchCriteria}]=${searchTerm}`;
         }
@@ -251,6 +251,23 @@ class KitePaintApi {
         });
         const transformedUsers = response.data.map(transformUser);
         return transformedUsers;
+    }
+
+    /**
+     * Finds users whose loginid is exactly the term or whose username contains it.
+     * @param {String} term
+     * @param {Number} [limit]
+     * @return {Promise<User[]>}
+     */
+    async searchUsers(term, limit = 20) {
+        const path = `/users.php?return%5B%5D=loginid&return%5B%5D=username&limit=${limit}&search=${encodeURIComponent(
+            term
+        )}`;
+        const response = await this.axiosInstance.get(path).catch(() => {
+            error('Failed to search users');
+            return Promise.reject();
+        });
+        return response.data.map(transformUser);
     }
 
     async updateUser(user) {

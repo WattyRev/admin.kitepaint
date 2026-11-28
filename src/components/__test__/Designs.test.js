@@ -79,6 +79,18 @@ describe('Designs', () => {
             expect(designsDataResponse.setSearchTerm).toHaveBeenCalledWith('boogers');
         });
     });
+    describe('Search criteria', () => {
+        it('can search by user and product names as well as ids', () => {
+            expect.assertions(1);
+            const { getByTestId } = renderWithTheme(<Designs />);
+            const values = Array.from(
+                getByTestId('search-criteria').querySelectorAll('option')
+            ).map(option => option.value);
+            expect(values).toStrictEqual(
+                expect.arrayContaining(['user', 'username', 'product', 'product_name'])
+            );
+        });
+    });
     describe('Sorting', () => {
         it('sorts by the clicked column', () => {
             expect.assertions(3);
@@ -171,6 +183,36 @@ describe('Designs', () => {
             const { getByText, queryAllByTestId } = renderWithTheme(<Designs />);
             expect(getByText('boogers')).toBeDefined();
             expect(queryAllByTestId('design-row')).toHaveLength(2);
+        });
+        it('displays the user and product as name (id)', () => {
+            expect.assertions(2);
+            designsDataResponse.designs = [
+                new Design({
+                    id: '1',
+                    name: 'boogers',
+                    user: '12',
+                    username: 'Void',
+                    product: '3',
+                    productName: 'B-Series PRO',
+                }),
+            ];
+            const { getByText } = renderWithTheme(<Designs />);
+            expect(getByText('Void (12)')).toBeInTheDocument();
+            expect(getByText('B-Series PRO (3)')).toBeInTheDocument();
+        });
+        it('displays only the ids when there are no names', () => {
+            expect.assertions(2);
+            designsDataResponse.designs = [
+                new Design({
+                    id: '1',
+                    name: 'boogers',
+                    user: '12',
+                    product: '3',
+                }),
+            ];
+            const { getByText } = renderWithTheme(<Designs />);
+            expect(getByText('12')).toBeInTheDocument();
+            expect(getByText('3')).toBeInTheDocument();
         });
         it('displays active as true', () => {
             expect.assertions(2);

@@ -1,8 +1,20 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Modal, ModalClose, Label, Input, Select, Button } from 'react-watty-ui';
-import Design, { DESIGN_STATUSES } from '../../models/Design';
+import api from '../../api/KitePaintApi';
+import Design, { DESIGN_STATUSES, formatNameWithId } from '../../models/Design';
+import Lookup from '../ui/Lookup';
 import DesignsEditData from './edit/Data';
+
+/** Finds users by id or username, in the shape that Lookup expects. */
+async function searchUsers(term) {
+    const users = await api.searchUsers(term);
+    return (users || []).map(user => ({
+        id: user.get('loginid'),
+        name: user.get('username'),
+        label: formatNameWithId(user.get('username'), user.get('loginid')),
+    }));
+}
 
 const DesignsEdit = ({ design, onClose, onSubmit }) => (
     <Modal isOpen={design !== null} onBackdropClick={onClose}>
@@ -54,17 +66,30 @@ const DesignsEdit = ({ design, onClose, onSubmit }) => (
                                 </option>
                             ))}
                         </Select>
-                        <Label htmlFor="user">User ID</Label>
-                        <Input
+                        <Label htmlFor="user">User</Label>
+                        <Lookup
                             id="user"
-                            value={editedDesign.get('user')}
                             required
-                            onChange={e =>
-                                setEditedDesign(editedDesign.set('user', e.target.value))
+                            placeholder="Search by user ID or username"
+                            label={formatNameWithId(
+                                editedDesign.get('username'),
+                                editedDesign.get('user')
+                            )}
+                            search={searchUsers}
+                            onSelect={(userId, username) =>
+                                setEditedDesign(
+                                    editedDesign.set('user', userId).set('username', username)
+                                )
                             }
                         />
-                        <Label>Product ID</Label>
-                        <Input readOnly value={editedDesign.get('product')} />
+                        <Label>Product</Label>
+                        <Input
+                            readOnly
+                            value={formatNameWithId(
+                                editedDesign.get('productName'),
+                                editedDesign.get('product')
+                            )}
+                        />
                         <Label htmlFor="active">Active</Label>
                         <Select
                             id="active"
