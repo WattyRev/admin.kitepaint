@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import { NavLink, useLocation } from 'react-router-dom';
 import { BlockListItem } from 'react-watty-ui';
 import { MOBILE_BAR_HEIGHT } from './ui/PageWrapper';
@@ -24,10 +24,17 @@ const Wrapper = styled.aside`
         width: 260px;
         max-width: 80vw;
         overflow-y: auto;
-        transform: translateX(${({ $open }) => ($open ? '0' : '-100%')});
-        visibility: ${({ $open }) => ($open ? 'visible' : 'hidden')};
-        transition: transform 0.25s ease,
-            visibility 0s linear ${({ $open }) => ($open ? '0s' : '0.25s')};
+        transform: translateX(-100%);
+        visibility: hidden;
+        transition: transform 0.25s ease, visibility 0s linear 0.25s;
+
+        ${({ $open }) =>
+            $open &&
+            css`
+                transform: translateX(0);
+                visibility: visible;
+                transition: transform 0.25s ease, visibility 0s linear 0s;
+            `}
     }
 `;
 
@@ -71,7 +78,11 @@ const Backdrop = styled.div`
     display: none;
 
     ${MOBILE_QUERY} {
-        display: ${({ $open }) => ($open ? 'block' : 'none')};
+        ${({ $open }) =>
+            $open &&
+            css`
+                display: block;
+            `}
         position: fixed;
         top: 0;
         left: 0;
