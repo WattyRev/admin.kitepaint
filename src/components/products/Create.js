@@ -4,12 +4,14 @@ import { Modal, ModalClose } from 'react-watty-ui';
 import Product from '../../models/Product';
 import ProductsCreateData from './create/Data';
 import ProductsForm from './Form';
+import WideModalStyle from './WideModalStyle';
 
 const ProductsCreate = ({ isOpen, onClose, onSubmit }) => {
     const [product, setProduct] = useState(new Product());
     return (
         <Modal isOpen={isOpen} onBackdropClick={onClose}>
             <ModalClose data-testid="close-modal" onClick={onClose} />
+            {isOpen && <WideModalStyle />}
             {isOpen && (
                 <ProductsCreateData
                     onSubmit={() => {

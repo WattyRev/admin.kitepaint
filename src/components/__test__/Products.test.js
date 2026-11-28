@@ -1,5 +1,5 @@
 import React from 'react';
-import { fireEvent } from '@testing-library/react';
+import { fireEvent, within } from '@testing-library/react';
 import mockProducts from '../../../mock-api/data/products';
 import mockManufacturers from '../../../mock-api/data/manufacturers';
 import { transformProduct } from '../../models/Product';
@@ -302,5 +302,124 @@ describe('Products', () => {
         const savedProduct = api.createProduct.mock.calls[0][0];
         const submittedValues = savedProduct.getProperties(...Object.keys(newValues));
         expect(submittedValues).toStrictEqual(newValues);
+    });
+
+    describe('colors', () => {
+        /** Opens the new product form and fills in the colors with the given list. */
+        async function openCreateFormWithColors(utils, colors) {
+            const [addButton] = await utils.findAllByText('Add New Product');
+            fireEvent.click(addButton);
+            await utils.findByTestId('product-form');
+            colors.forEach(({ name, color }, index) => {
+                fireEvent.click(utils.getByText('Add Color'));
+                fireEvent.change(utils.getAllByPlaceholderText('Color Name')[index], {
+                    target: { value: name },
+                });
+                fireEvent.change(utils.getAllByPlaceholderText('Color Hexidecimal')[index], {
+                    target: { value: color },
+                });
+            });
+        }
+
+        const getColorNames = utils =>
+            utils.getAllByPlaceholderText('Color Name').map(input => input.value);
+
+        it('can move colors up and down', async () => {
+            expect.assertions(4);
+            const utils = renderWithTheme(<Products />);
+            await openCreateFormWithColors(utils, [
+                { name: 'Red', color: '#ff0000' },
+                { name: 'Green', color: '#00ff00' },
+                { name: 'Blue', color: '#0000ff' },
+            ]);
+            const form = within(utils.getByTestId('product-form'));
+            const colorRows = () =>
+                form.getAllByPlaceholderText('Color Name').map(input => input.parentElement);
+
+            // The "up" button is first and the "down" button is second in each row
+            const buttonsIn = row => row.querySelectorAll('button:not([aria-label])');
+            fireEvent.click(buttonsIn(colorRows()[2])[0]);
+            expect(getColorNames(utils)).toStrictEqual(['Red', 'Blue', 'Green']);
+            fireEvent.click(buttonsIn(colorRows()[0])[1]);
+            expect(getColorNames(utils)).toStrictEqual(['Blue', 'Red', 'Green']);
+            // Moving past either end does nothing
+            fireEvent.click(buttonsIn(colorRows()[0])[0]);
+            fireEvent.click(buttonsIn(colorRows()[2])[1]);
+            expect(getColorNames(utils)).toStrictEqual(['Blue', 'Red', 'Green']);
+
+            fireEvent.change(utils.getByLabelText('Name'), { target: { value: 'Boogers' } });
+            await pickManufacturer(utils, '3');
+            fireEvent.click(utils.getByText('Save'));
+            const savedProduct = api.createProduct.mock.calls[0][0];
+            expect(savedProduct.get('colors').map(({ name }) => name)).toStrictEqual([
+                'Blue',
+                'Red',
+                'Green',
+            ]);
+        });
+
+        it('strips extra properties from the colors when saving', async () => {
+            expect.assertions(1);
+            const utils = renderWithTheme(<Products />);
+            const [addButton] = await utils.findAllByText('Add New Product');
+            fireEvent.click(addButton);
+            await utils.findByTestId('product-form');
+            fireEvent.click(utils.getByText('Edit as Text'));
+            const textarea = utils.getByPlaceholderText('JSON');
+            fireEvent.change(textarea, {
+                target: {
+                    value: JSON.stringify([
+                        { name: 'Red', color: '#ff0000', id: 'abc', extra: { a: 1 } },
+                    ]),
+                },
+            });
+            fireEvent.blur(textarea);
+
+            fireEvent.change(utils.getByLabelText('Name'), { target: { value: 'Boogers' } });
+            await pickManufacturer(utils, '3');
+            fireEvent.click(utils.getByText('Save'));
+            const savedProduct = api.createProduct.mock.calls[0][0];
+            expect(JSON.parse(savedProduct.buildPayload().colors)).toStrictEqual([
+                { name: 'Red', color: '#ff0000' },
+            ]);
+        });
+
+        it('imports the colors from another product, replacing the existing colors', async () => {
+            expect.assertions(3);
+            const sourceProduct = transformProduct({
+                ...mockProducts[1],
+                id: '99',
+                name: 'Source Product',
+                colors: JSON.stringify([
+                    { name: 'Teal', color: '#008080', id: 'extra' },
+                    { name: 'Gold', color: '#ffd700' },
+                ]),
+            });
+            api.getProducts.mockResolvedValue([
+                ...mockProducts.map(transformProduct),
+                sourceProduct,
+            ]);
+            const utils = renderWithTheme(<Products />);
+            await openCreateFormWithColors(utils, [{ name: 'Red', color: '#ff0000' }]);
+
+            fireEvent.change(
+                utils.getByPlaceholderText('Import colors from product (search by name)'),
+                { target: { value: 'source' } }
+            );
+            const results = await utils.findAllByTestId('lookup-result');
+            expect(results).toHaveLength(1);
+            fireEvent.mouseDown(results[0]);
+
+            await utils.findByDisplayValue('Teal');
+            expect(getColorNames(utils)).toStrictEqual(['Teal', 'Gold']);
+
+            fireEvent.change(utils.getByLabelText('Name'), { target: { value: 'Boogers' } });
+            await pickManufacturer(utils, '3');
+            fireEvent.click(utils.getByText('Save'));
+            expect(api.createProduct.mock.calls[0][0].get('colors')).toStrictEqual([
+                { name: 'Teal', color: '#008080' },
+                { name: 'Gold', color: '#ffd700' },
+            ]);
+        });
     });
 });

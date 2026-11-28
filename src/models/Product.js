@@ -3,6 +3,24 @@ import PropTypes from 'prop-types';
 
 export const PRODUCT_STATUSES = ['Private', 'Unlisted', 'Public'];
 
+/**
+ * Reduces colors to only the properties that are stored in the database, so extra properties from
+ * pasted JSON don't end up saved.
+ * @param {Object[]} colors
+ * @return {{ name: string, color: string }[]}
+ */
+export function sanitizeColors(colors) {
+    if (!Array.isArray(colors)) {
+        return [];
+    }
+    return colors
+        .filter(color => color && typeof color === 'object')
+        .map(({ name, color }) => ({
+            name: typeof name === 'string' ? name : '',
+            color: typeof color === 'string' ? color : '',
+        }));
+}
+
 const Product = createModel('Product', {
     id: null,
     colors: [],
@@ -20,7 +38,7 @@ const Product = createModel('Product', {
         return {
             ...this.getProperties('id', 'embed', 'manufacturer', 'name', 'url'),
             variations: JSON.stringify(this.get('variations')),
-            colors: JSON.stringify(this.get('colors')),
+            colors: JSON.stringify(sanitizeColors(this.get('colors'))),
             notes: JSON.stringify(this.get('notes')),
             status: PRODUCT_STATUSES.indexOf(this.get('status')),
         };

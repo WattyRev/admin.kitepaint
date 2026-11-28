@@ -4,10 +4,12 @@ import { Modal, ModalClose } from 'react-watty-ui';
 import Product from '../../models/Product';
 import ProductsEditData from './edit/Data';
 import ProductsForm from './Form';
+import WideModalStyle from './WideModalStyle';
 
 const ProductsEdit = ({ product, onClose, onSubmit }) => (
     <Modal isOpen={product !== null} onBackdropClick={onClose}>
         <ModalClose data-testid="close-modal" onClick={onClose} />
+        {product && <WideModalStyle />}
         {product && (
             <ProductsEditData
                 product={product}
