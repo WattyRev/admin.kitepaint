@@ -17,7 +17,7 @@ const DEFAULT_DIRECTIONS = {
 const DesignsData = ({ children }) => {
     const [designs, setDesigns] = useState([]);
     const [total, setTotal] = useState(0);
-    const [searchCriteria, setSearchCriteria] = useState('');
+    const [searchCriteria, setSearchCriteria] = useState('name');
     const [searchTerm, setSearchTerm] = useState('');
     const [sortBy, setSortBy] = useState('created');
     const [sortDirection, setSortDirection] = useState('DESC');

@@ -23,7 +23,7 @@ const API_COLUMNS = {
 const UsersData = ({ children }) => {
     const [users, setUsers] = useState([]);
     const [total, setTotal] = useState(0);
-    const [searchCriteria, setSearchCriteria] = useState('');
+    const [searchCriteria, setSearchCriteria] = useState('username');
     const [searchTerm, setSearchTerm] = useState('');
     const [sortBy, setSortBy] = useState('last_login');
     const [sortDirection, setSortDirection] = useState('DESC');

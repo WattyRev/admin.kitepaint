@@ -14,7 +14,7 @@ const DEFAULT_DIRECTIONS = {
  */
 const ProductsData = ({ children }) => {
     const [products, setProducts] = useState([]);
-    const [searchCriteria, setSearchCriteria] = useState('');
+    const [searchCriteria, setSearchCriteria] = useState('name');
     const [searchTerm, setSearchTerm] = useState('');
     const [sortBy, setSortBy] = useState('created');
     const [sortDirection, setSortDirection] = useState('DESC');

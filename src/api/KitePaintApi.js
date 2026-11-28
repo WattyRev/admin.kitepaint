@@ -62,6 +62,19 @@ class KitePaintApi {
     }
 
     /**
+     * Gets the counts shown on the dashboard.
+     * @return {Promise<Object>} Counts: users {total, active30, active365} and designs {total,
+     * created30, created60}
+     */
+    async getDashboardStats() {
+        const response = await this.axiosInstance.get('/stats.php').catch(() => {
+            error('Failed to get dashboard stats');
+            return Promise.reject();
+        });
+        return response.data;
+    }
+
+    /**
      * Gets one page of designs.
      * @param {Object} options
      * @param {String} [options.searchTerm]
@@ -346,49 +359,6 @@ class KitePaintApi {
             throw e;
         }
         success("User's password has been reset");
-    }
-
-    /**
-     * Fills in design colors for one batch of designs with an id greater than afterId.
-     * @param {Number} afterId The last design id processed so far (0 for the first batch)
-     * @return {Promise<{processed: Number, nextAfterId: Number, remaining: Number}>}
-     */
-    async backfillDesignColors(afterId) {
-        const path = '/backfill_design_colors.php';
-        const bodyFormData = new FormData();
-        bodyFormData.append('afterId', afterId);
-        try {
-            const response = await this.axiosInstance.post(path, bodyFormData);
-            if (!response?.data?.valid) {
-                throw new Error('Request is invalid');
-            }
-            return response.data;
-        } catch (e) {
-            error(e?.response?.data?.message || 'Failed to backfill design colors');
-            throw e;
-        }
-    }
-
-    /**
-     * Re-picks the primary (thumbnail) variation for one batch of designs with an id greater than
-     * afterId.
-     * @param {Number} afterId The last design id processed so far (0 for the first batch)
-     * @return {Promise<Object>} The processed, changed, nextAfterId and remaining counts
-     */
-    async backfillDesignPrimary(afterId) {
-        const path = '/backfill_design_primary.php';
-        const bodyFormData = new FormData();
-        bodyFormData.append('afterId', afterId);
-        try {
-            const response = await this.axiosInstance.post(path, bodyFormData);
-            if (!response?.data?.valid) {
-                throw new Error('Request is invalid');
-            }
-            return response.data;
-        } catch (e) {
-            error(e?.response?.data?.message || 'Failed to backfill design thumbnails');
-            throw e;
-        }
     }
 }
 

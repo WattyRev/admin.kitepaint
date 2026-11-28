@@ -1,5 +1,5 @@
 import React from 'react';
-import { fireEvent, within } from '@testing-library/react';
+import { act, fireEvent, within } from '@testing-library/react';
 import mockProducts from '../../../mock-api/data/products';
 import mockManufacturers from '../../../mock-api/data/manufacturers';
 import { transformProduct } from '../../models/Product';
@@ -40,23 +40,17 @@ describe('Products', () => {
         const { findAllByTestId } = renderWithTheme(<Products />);
         expect(await findAllByTestId('product-row')).toHaveLength(mockProducts.length);
     });
-    it('can search products', () => {
+    it('searches by name by default, as the user types', () => {
         expect.assertions(1);
-        const { getByTestId, getByPlaceholderText } = renderWithTheme(<Products />);
-        fireEvent.change(getByTestId('search-criteria'), {
-            target: {
-                value: 'name',
-            },
-        });
+        jest.useFakeTimers();
+        const { getByPlaceholderText } = renderWithTheme(<Products />);
         fireEvent.change(getByPlaceholderText('Search'), {
             target: {
                 value: 'test',
             },
         });
-        fireEvent.blur(getByPlaceholderText('Search'), {
-            target: {
-                value: 'test',
-            },
+        act(() => {
+            jest.advanceTimersByTime(300);
         });
         expect(api.getProducts).toHaveBeenCalledWith({
             searchCriteria: 'name',
@@ -64,6 +58,32 @@ describe('Products', () => {
             sortBy: 'created',
             sortDirection: 'DESC',
         });
+        jest.useRealTimers();
+    });
+    it('can search products by another field', () => {
+        expect.assertions(1);
+        jest.useFakeTimers();
+        const { getByTestId, getByPlaceholderText } = renderWithTheme(<Products />);
+        fireEvent.change(getByTestId('search-criteria'), {
+            target: {
+                value: 'id',
+            },
+        });
+        fireEvent.change(getByPlaceholderText('Search'), {
+            target: {
+                value: '3',
+            },
+        });
+        act(() => {
+            jest.advanceTimersByTime(300);
+        });
+        expect(api.getProducts).toHaveBeenCalledWith({
+            searchCriteria: 'id',
+            searchTerm: '3',
+            sortBy: 'created',
+            sortDirection: 'DESC',
+        });
+        jest.useRealTimers();
     });
     it('sorts newest to oldest by default', async () => {
         expect.assertions(3);

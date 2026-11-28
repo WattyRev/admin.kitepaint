@@ -26,6 +26,18 @@ app.listen(13390, () => {
     console.log('Mock API server running on port 13390');
 });
 
+// Columns searched with a case-insensitive "contains" match, like the real API. Every other
+// column (the IDs) must match exactly.
+const CONTAINS_COLUMNS = ['name', 'username', 'product_name', 'email'];
+
+const matchesFilter = (row, column, term) => {
+    const value = String(row[column] === undefined || row[column] === null ? '' : row[column]);
+    if (CONTAINS_COLUMNS.includes(column)) {
+        return value.toLowerCase().includes(String(term).toLowerCase());
+    }
+    return value === String(term);
+};
+
 // Define routes
 
 app.get('/api/', (request, response) => {
@@ -34,6 +46,25 @@ app.get('/api/', (request, response) => {
 
 app.get('/api/ping.php', (request, response) => {
     response.json({ message: 'pong' });
+});
+
+app.get('/api/stats.php', (request, response) => {
+    const DAY = 24 * 60 * 60 * 1000;
+    const now = Date.now();
+    const countSince = (rows, column, days) =>
+        rows.filter(row => now - new Date(row[column]).getTime() <= days * DAY).length;
+    response.json({
+        users: {
+            total: users.length,
+            active30: countSince(users, 'last_login', 30),
+            active365: countSince(users, 'last_login', 365),
+        },
+        designs: {
+            total: designs.length,
+            created30: countSince(designs, 'created', 30),
+            created60: countSince(designs, 'created', 60),
+        },
+    });
 });
 
 app.get('/api/designs.php', (request, response) => {
@@ -47,11 +78,9 @@ app.get('/api/designs.php', (request, response) => {
     if (query.filter) {
         const filters = Object.entries(query.filter);
         const searchCriteria = filters[0][0];
-        const searchTerm = String(filters[0][1]).toLowerCase();
+        const searchTerm = filters[0][1];
         relevantDesigns = relevantDesigns.filter(design =>
-            String(design[searchCriteria] || '')
-                .toLowerCase()
-                .includes(searchTerm)
+            matchesFilter(design, searchCriteria, searchTerm)
         );
     }
     if (query.order) {
@@ -111,7 +140,7 @@ app.get('/api/products.php', (request, response) => {
         const searchCriteria = filters[0][0];
         const searchTerm = filters[0][1];
         relevantProducts = relevantProducts.filter(product =>
-            product[searchCriteria].includes(searchTerm)
+            matchesFilter(product, searchCriteria, searchTerm)
         );
     }
     if (query.order) {
@@ -259,7 +288,9 @@ app.get('/api/users.php', (request, response) => {
         const filters = Object.entries(query.filter);
         const searchCriteria = filters[0][0];
         const searchTerm = filters[0][1];
-        relevantUsers = relevantUsers.filter(user => user[searchCriteria].includes(searchTerm));
+        relevantUsers = relevantUsers.filter(user =>
+            matchesFilter(user, searchCriteria, searchTerm)
+        );
     }
     if (query.order) {
         const [column, direction] = query.order;
