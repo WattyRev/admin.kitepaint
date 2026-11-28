@@ -38,14 +38,40 @@ app.get('/api/ping.php', (request, response) => {
 
 app.get('/api/designs.php', (request, response) => {
     const { query } = request;
-    let relevantDesigns = designs;
+    // Add the owner's username and the product's name, like the real API does.
+    let relevantDesigns = designs.map(design => ({
+        ...design,
+        username: (users.find(user => user.loginid === design.user) || {}).username,
+        product_name: (products.find(product => product.id === design.product) || {}).name,
+    }));
     if (query.filter) {
         const filters = Object.entries(query.filter);
         const searchCriteria = filters[0][0];
-        const searchTerm = filters[0][1];
+        const searchTerm = String(filters[0][1]).toLowerCase();
         relevantDesigns = relevantDesigns.filter(design =>
-            design[searchCriteria].includes(searchTerm)
+            String(design[searchCriteria] || '')
+                .toLowerCase()
+                .includes(searchTerm)
         );
+    }
+    if (query.order) {
+        const [column, direction] = query.order;
+        const multiplier = String(direction).toUpperCase() === 'DESC' ? -1 : 1;
+        relevantDesigns = [...relevantDesigns].sort((a, b) => {
+            if (a[column] === b[column]) {
+                return 0;
+            }
+            return (a[column] > b[column] ? 1 : -1) * multiplier;
+        });
+    }
+    const total = relevantDesigns.length;
+    if (query.limit) {
+        const skip = Number(query.skip || 0);
+        relevantDesigns = relevantDesigns.slice(skip, skip + Number(query.limit));
+    }
+    if (query.includeTotal) {
+        response.json({ data: relevantDesigns, total });
+        return;
     }
     response.json(relevantDesigns);
 });
@@ -73,7 +99,13 @@ app.post('/api/designs.php', (request, response) => {
 
 app.get('/api/products.php', (request, response) => {
     const { query } = request;
-    let relevantProducts = products;
+    // Add the manufacturer's name, like the real API does.
+    let relevantProducts = products.map(product => ({
+        ...product,
+        manufacturer_name: (
+            manufacturers.find(manufacturer => manufacturer.id === product.manufacturer) || {}
+        ).name,
+    }));
     if (query.filter) {
         const filters = Object.entries(query.filter);
         const searchCriteria = filters[0][0];
@@ -81,6 +113,26 @@ app.get('/api/products.php', (request, response) => {
         relevantProducts = relevantProducts.filter(product =>
             product[searchCriteria].includes(searchTerm)
         );
+    }
+    if (query.order) {
+        const [column, direction] = query.order;
+        const multiplier = String(direction).toUpperCase() === 'DESC' ? -1 : 1;
+        const sortValue = product => {
+            if (column === 'created') {
+                return new Date(product.created).getTime();
+            }
+            if (column === 'manufacturer') {
+                return Number(product.manufacturer);
+            }
+            return String(product[column]).toLowerCase();
+        };
+        relevantProducts = [...relevantProducts].sort((a, b) => {
+            if (sortValue(a) === sortValue(b)) {
+                // Break ties on id, newest first, like the real API.
+                return Number(b.id) - Number(a.id);
+            }
+            return (sortValue(a) > sortValue(b) ? 1 : -1) * multiplier;
+        });
     }
     response.json(relevantProducts);
 });
@@ -197,11 +249,44 @@ app.post('/api/manufacturers.php', (request, response) => {
 app.get('/api/users.php', (request, response) => {
     const { query } = request;
     let relevantUsers = users;
+    if (query.search) {
+        const term = String(query.search).toLowerCase();
+        relevantUsers = relevantUsers.filter(
+            user => user.loginid === query.search || user.username.toLowerCase().includes(term)
+        );
+    }
     if (query.filter) {
         const filters = Object.entries(query.filter);
         const searchCriteria = filters[0][0];
         const searchTerm = filters[0][1];
         relevantUsers = relevantUsers.filter(user => user[searchCriteria].includes(searchTerm));
+    }
+    if (query.order) {
+        const [column, direction] = query.order;
+        const multiplier = String(direction).toUpperCase() === 'DESC' ? -1 : 1;
+        // Dates are MM/DD/YYYY strings, so they need to be parsed to be compared.
+        const sortValue = user => {
+            if (column === 'create_time' || column === 'last_login') {
+                return new Date(user[column]).getTime();
+            }
+            return String(user[column]).toLowerCase();
+        };
+        relevantUsers = [...relevantUsers].sort((a, b) => {
+            if (sortValue(a) === sortValue(b)) {
+                // Break ties on loginid, newest first, like the real API.
+                return Number(b.loginid) - Number(a.loginid);
+            }
+            return (sortValue(a) > sortValue(b) ? 1 : -1) * multiplier;
+        });
+    }
+    const total = relevantUsers.length;
+    if (query.limit) {
+        const skip = Number(query.skip || 0);
+        relevantUsers = relevantUsers.slice(skip, skip + Number(query.limit));
+    }
+    if (query.includeTotal) {
+        response.json({ data: relevantUsers, total });
+        return;
     }
     response.json(relevantUsers);
 });

@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, fireEvent } from '@testing-library/react';
+import { render, fireEvent, waitFor, act } from '@testing-library/react';
 import api from '../../../api/KitePaintApi';
 import User from '../../../models/User';
 import UsersData from '../Data';
@@ -8,7 +8,7 @@ jest.mock('../../../api/KitePaintApi');
 
 describe('UsersData', () => {
     beforeEach(() => {
-        api.getUsers.mockResolvedValue([]);
+        api.getUsers.mockResolvedValue({ users: [], total: 0 });
     });
     it('renders', () => {
         expect.assertions(1);
@@ -18,12 +18,15 @@ describe('UsersData', () => {
     });
     it('provides users fetched from the API', async () => {
         expect.assertions(1);
-        api.getUsers.mockResolvedValue([
-            new User({
-                loginid: '1',
-                username: 'boogers',
-            }),
-        ]);
+        api.getUsers.mockResolvedValue({
+            users: [
+                new User({
+                    loginid: '1',
+                    username: 'boogers',
+                }),
+            ],
+            total: 1,
+        });
         const { findByText } = render(
             <UsersData>
                 {({ users }) =>
@@ -35,12 +38,15 @@ describe('UsersData', () => {
     });
     it('sets isLoading to true while waiting for data', async () => {
         expect.assertions(3);
-        api.getUsers.mockResolvedValue([
-            new User({
-                loginid: '1',
-                username: 'boogers',
-            }),
-        ]);
+        api.getUsers.mockResolvedValue({
+            users: [
+                new User({
+                    loginid: '1',
+                    username: 'boogers',
+                }),
+            ],
+            total: 1,
+        });
         const { getByTestId, findByTestId } = render(
             <UsersData>
                 {({ isLoading }) => (
@@ -57,12 +63,15 @@ describe('UsersData', () => {
     });
     it('sets isLoading to false when data is retrieved', async () => {
         expect.assertions(2);
-        api.getUsers.mockResolvedValue([
-            new User({
-                loginid: '1',
-                username: 'boogers',
-            }),
-        ]);
+        api.getUsers.mockResolvedValue({
+            users: [
+                new User({
+                    loginid: '1',
+                    username: 'boogers',
+                }),
+            ],
+            total: 1,
+        });
         const { findByTestId } = render(
             <UsersData>
                 {({ isLoading }) => (
@@ -127,6 +136,135 @@ describe('UsersData', () => {
         expect(api.getUsers).toHaveBeenCalledWith({
             searchCriteria: 'name',
             searchTerm: 'boogers',
+            sortBy: 'last_login',
+            sortDirection: 'DESC',
+            page: 1,
+            pageSize: 100,
+        });
+    });
+
+    describe('sorting and pagination', () => {
+        const renderData = () => {
+            let latest;
+            render(
+                <UsersData>
+                    {data => {
+                        latest = data;
+                        return null;
+                    }}
+                </UsersData>
+            );
+            return () => latest;
+        };
+
+        it('fetches the first page sorted by last login, newest first, by default', async () => {
+            renderData();
+            await waitFor(() =>
+                expect(api.getUsers).toHaveBeenCalledWith(
+                    expect.objectContaining({
+                        sortBy: 'last_login',
+                        sortDirection: 'DESC',
+                        page: 1,
+                    })
+                )
+            );
+        });
+
+        it('sorts a new column using its default direction', async () => {
+            const getData = renderData();
+            await waitFor(() => expect(getData().isLoading).toBe(false));
+            await act(async () => {
+                await getData().sort('username');
+            });
+            expect(api.getUsers).toHaveBeenLastCalledWith(
+                expect.objectContaining({ sortBy: 'username', sortDirection: 'ASC', page: 1 })
+            );
+            expect(getData().sortBy).toBe('username');
+        });
+
+        it('reverses the direction when the active column is sorted again', async () => {
+            const getData = renderData();
+            await waitFor(() => expect(getData().isLoading).toBe(false));
+            await act(async () => {
+                await getData().sort('last_login');
+            });
+            expect(api.getUsers).toHaveBeenLastCalledWith(
+                expect.objectContaining({ sortBy: 'last_login', sortDirection: 'ASC' })
+            );
+            await act(async () => {
+                await getData().sort('last_login');
+            });
+            expect(api.getUsers).toHaveBeenLastCalledWith(
+                expect.objectContaining({ sortBy: 'last_login', sortDirection: 'DESC' })
+            );
+        });
+
+        it('requests the created column as create_time', async () => {
+            const getData = renderData();
+            await waitFor(() => expect(getData().isLoading).toBe(false));
+            await act(async () => {
+                await getData().sort('created');
+            });
+            expect(api.getUsers).toHaveBeenLastCalledWith(
+                expect.objectContaining({ sortBy: 'create_time', sortDirection: 'DESC' })
+            );
+            expect(getData().sortBy).toBe('created');
+        });
+
+        it('calculates the total pages from the total', async () => {
+            api.getUsers.mockResolvedValue({ users: [], total: 250 });
+            const getData = renderData();
+            await waitFor(() => expect(getData().totalPages).toBe(3));
+        });
+
+        it('fetches the requested page', async () => {
+            api.getUsers.mockResolvedValue({ users: [], total: 250 });
+            const getData = renderData();
+            await waitFor(() => expect(getData().totalPages).toBe(3));
+            await act(async () => {
+                await getData().setPage(2);
+            });
+            expect(api.getUsers).toHaveBeenLastCalledWith(expect.objectContaining({ page: 2 }));
+            expect(getData().page).toBe(2);
+        });
+
+        it('keeps the page and sort when refreshing', async () => {
+            api.getUsers.mockResolvedValue({ users: [], total: 250 });
+            const getData = renderData();
+            await waitFor(() => expect(getData().totalPages).toBe(3));
+            await act(async () => {
+                await getData().setPage(2);
+            });
+            await act(async () => {
+                await getData().refresh();
+            });
+            expect(api.getUsers).toHaveBeenLastCalledWith(
+                expect.objectContaining({ page: 2, sortBy: 'last_login', sortDirection: 'DESC' })
+            );
+        });
+
+        it('returns to the first page when sorting or searching', async () => {
+            api.getUsers.mockResolvedValue({ users: [], total: 250 });
+            const getData = renderData();
+            await waitFor(() => expect(getData().totalPages).toBe(3));
+            await act(async () => {
+                await getData().setPage(3);
+            });
+            await act(async () => {
+                await getData().sort('username');
+            });
+            expect(api.getUsers).toHaveBeenLastCalledWith(
+                expect.objectContaining({ page: 1, sortBy: 'username' })
+            );
+            await act(async () => {
+                await getData().setPage(2);
+            });
+            await act(async () => {
+                await getData().search('username', 'boogers');
+            });
+            expect(api.getUsers).toHaveBeenLastCalledWith(
+                expect.objectContaining({ page: 1, searchTerm: 'boogers' })
+            );
         });
     });
 });

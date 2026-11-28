@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { Label, Input, Select, Button } from 'react-watty-ui';
 import Product, { PRODUCT_STATUSES } from '../../models/Product';
 import ColorsField from './ColorsField';
+import ManufacturerField from './ManufacturerField';
 import VariationsField from './VariationsField';
 
 const Flex = styled.div`
@@ -50,11 +51,18 @@ const ProductsForm = ({ product, onProductUpdate, onSubmit, isSubmitting }) => (
         />
 
         <Label htmlFor="manufacturer">Manufacturer</Label>
-        <Input
+        <ManufacturerField
             id="manufacturer"
-            value={product.get('manufacturer') || ''}
-            onChange={e => onProductUpdate(product.set('manufacturer', e.target.value))}
             required
+            manufacturer={product.get('manufacturer') || ''}
+            manufacturerName={product.get('manufacturerName') || ''}
+            onChange={(manufacturerId, manufacturerName) =>
+                onProductUpdate(
+                    product
+                        .set('manufacturer', manufacturerId)
+                        .set('manufacturerName', manufacturerName)
+                )
+            }
         />
 
         <Label htmlFor="url">URL</Label>

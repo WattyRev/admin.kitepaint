@@ -9,7 +9,10 @@ jest.mock('../../api/KitePaintApi');
 
 describe('Users', () => {
     beforeEach(() => {
-        api.getUsers.mockResolvedValue(mockUsers.map(transformUser));
+        api.getUsers.mockResolvedValue({
+            users: mockUsers.map(transformUser),
+            total: mockUsers.length,
+        });
         api.updateUser.mockResolvedValue();
         api.resetUserPassword.mockResolvedValue();
     });
@@ -45,7 +48,64 @@ describe('Users', () => {
         expect(api.getUsers).toHaveBeenCalledWith({
             searchCriteria: 'username',
             searchTerm: 'test',
+            sortBy: 'last_login',
+            sortDirection: 'DESC',
+            page: 1,
+            pageSize: 100,
         });
+    });
+    it('sorts by last login, newest first, by default', async () => {
+        expect.assertions(3);
+        const { findAllByTestId, getByTestId } = renderWithTheme(<Users />);
+        await findAllByTestId('user-row');
+        expect(api.getUsers).toHaveBeenCalledWith(
+            expect.objectContaining({ sortBy: 'last_login', sortDirection: 'DESC' })
+        );
+        expect(getByTestId('sort-last_login').closest('th')).toHaveAttribute(
+            'aria-sort',
+            'descending'
+        );
+        expect(getByTestId('sort-username').closest('th')).toHaveAttribute('aria-sort', 'none');
+    });
+    it('sorts in both directions when a column header is clicked', async () => {
+        expect.assertions(4);
+        const { findAllByTestId, getByTestId } = renderWithTheme(<Users />);
+        await findAllByTestId('user-row');
+        fireEvent.click(getByTestId('sort-username'));
+        expect(api.getUsers).toHaveBeenLastCalledWith(
+            expect.objectContaining({ sortBy: 'username', sortDirection: 'ASC' })
+        );
+        await findAllByTestId('user-row');
+        fireEvent.click(getByTestId('sort-username'));
+        expect(api.getUsers).toHaveBeenLastCalledWith(
+            expect.objectContaining({ sortBy: 'username', sortDirection: 'DESC' })
+        );
+        await findAllByTestId('user-row');
+        fireEvent.click(getByTestId('sort-email'));
+        expect(api.getUsers).toHaveBeenLastCalledWith(
+            expect.objectContaining({ sortBy: 'email', sortDirection: 'ASC' })
+        );
+        await findAllByTestId('user-row');
+        fireEvent.click(getByTestId('sort-created'));
+        expect(api.getUsers).toHaveBeenLastCalledWith(
+            expect.objectContaining({ sortBy: 'create_time', sortDirection: 'DESC' })
+        );
+    });
+    it('does not render pagination when there is only one page', async () => {
+        expect.assertions(1);
+        const { findAllByTestId, queryByTestId } = renderWithTheme(<Users />);
+        await findAllByTestId('user-row');
+        expect(queryByTestId('pagination')).toBeNull();
+    });
+    it('changes the page when a pagination button is clicked', async () => {
+        expect.assertions(1);
+        api.getUsers.mockResolvedValue({
+            users: mockUsers.map(transformUser),
+            total: 250,
+        });
+        const { findByLabelText } = renderWithTheme(<Users />);
+        fireEvent.click(await findByLabelText('Next page'));
+        expect(api.getUsers).toHaveBeenLastCalledWith(expect.objectContaining({ page: 2 }));
     });
     it('can edit a user', async () => {
         expect.assertions(3);

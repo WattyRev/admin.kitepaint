@@ -61,9 +61,31 @@ class KitePaintApi {
         return this.axiosInstance.get(path);
     }
 
-    async getDesigns({ searchTerm, searchCriteria }) {
-        let path =
-            '/designs.php?limit=100&return%5B%5D=id&return%5B%5D=active&return%5B%5D=created&return%5B%5D=user&return%5B%5D=status&return%5B%5D=name&return%5B%5D=product&return%5B%5D=updated';
+    /**
+     * Gets one page of designs.
+     * @param {Object} options
+     * @param {String} [options.searchTerm]
+     * @param {String} [options.searchCriteria]
+     * @param {String} [options.sortBy] The column to sort by
+     * @param {String} [options.sortDirection] ASC or DESC
+     * @param {Number} [options.page] The 1-based page number
+     * @param {Number} [options.pageSize]
+     * @return {Promise<{designs: Array, total: Number}>}
+     */
+    async getDesigns({
+        searchTerm,
+        searchCriteria,
+        sortBy = 'created',
+        sortDirection = 'DESC',
+        page = 1,
+        pageSize = 100,
+    } = {}) {
+        const skip = (page - 1) * pageSize;
+        let path = `/designs.php?limit=${pageSize}&skip=${skip}&includeTotal=1&order%5B%5D=${encodeURIComponent(
+            sortBy
+        )}&order%5B%5D=${encodeURIComponent(
+            sortDirection
+        )}&return%5B%5D=id&return%5B%5D=active&return%5B%5D=created&return%5B%5D=user&return%5B%5D=status&return%5B%5D=name&return%5B%5D=product&return%5B%5D=updated&return%5B%5D=username&return%5B%5D=product_name`;
         if (searchTerm && searchCriteria) {
             path += `&filter[${searchCriteria}]=${searchTerm}`;
         }
@@ -71,8 +93,13 @@ class KitePaintApi {
             error('Failed to get designs');
             return Promise.reject();
         });
-        const transformedDesigns = response.data.map(transformDesign);
-        return transformedDesigns;
+        // Older API deployments return a bare array instead of { data, total }.
+        const rows = Array.isArray(response.data) ? response.data : response.data.data;
+        const total = Array.isArray(response.data) ? rows.length : response.data.total;
+        return {
+            designs: rows.map(transformDesign),
+            total,
+        };
     }
 
     async updateDesign(design) {
@@ -93,9 +120,21 @@ class KitePaintApi {
         success('Design saved');
     }
 
-    async getProducts({ searchTerm, searchCriteria }) {
-        let path =
-            '/products.php?limit=100&return%5B%5D=id&return%5B%5D=created&return%5B%5D=embed&return%5B%5D=colors&return%5B%5D=manufacturer&return%5B%5D=name&return%5B%5D=notes&return%5B%5D=status&return%5B%5D=url&return%5B%5D=variations';
+    /**
+     * Gets products.
+     * @param {Object} options
+     * @param {String} [options.searchTerm]
+     * @param {String} [options.searchCriteria]
+     * @param {String} [options.sortBy] The column to sort by
+     * @param {String} [options.sortDirection] ASC or DESC
+     * @return {Promise<Product[]>}
+     */
+    async getProducts({ searchTerm, searchCriteria, sortBy = 'created', sortDirection = 'DESC' }) {
+        let path = `/products.php?limit=100&order%5B%5D=${encodeURIComponent(
+            sortBy
+        )}&order%5B%5D=${encodeURIComponent(
+            sortDirection
+        )}&return%5B%5D=id&return%5B%5D=created&return%5B%5D=embed&return%5B%5D=colors&return%5B%5D=manufacturer&return%5B%5D=manufacturer_name&return%5B%5D=name&return%5B%5D=notes&return%5B%5D=status&return%5B%5D=url&return%5B%5D=variations`;
         if (searchTerm && searchCriteria) {
             path += `&filter[${searchCriteria}]=${searchTerm}`;
         }
@@ -212,9 +251,31 @@ class KitePaintApi {
         success('Manufacturer saved');
     }
 
-    async getUsers({ searchTerm, searchCriteria }) {
-        let path =
-            '/users.php?return%5B%5D=loginid&return%5B%5D=username&return%5B%5D=create_time&return%5B%5D=last_login&return%5B%5D=email&return%5B%5D=activated&limit=100';
+    /**
+     * Gets one page of users.
+     * @param {Object} options
+     * @param {String} [options.searchTerm]
+     * @param {String} [options.searchCriteria]
+     * @param {String} [options.sortBy] The column to sort by
+     * @param {String} [options.sortDirection] ASC or DESC
+     * @param {Number} [options.page] The 1-based page number
+     * @param {Number} [options.pageSize]
+     * @return {Promise<{users: Array, total: Number}>}
+     */
+    async getUsers({
+        searchTerm,
+        searchCriteria,
+        sortBy = 'last_login',
+        sortDirection = 'DESC',
+        page = 1,
+        pageSize = 100,
+    } = {}) {
+        const skip = (page - 1) * pageSize;
+        let path = `/users.php?limit=${pageSize}&skip=${skip}&includeTotal=1&order%5B%5D=${encodeURIComponent(
+            sortBy
+        )}&order%5B%5D=${encodeURIComponent(
+            sortDirection
+        )}&return%5B%5D=loginid&return%5B%5D=username&return%5B%5D=create_time&return%5B%5D=last_login&return%5B%5D=email&return%5B%5D=activated`;
         if (searchTerm && searchCriteria) {
             path += `&filter[${searchCriteria}]=${searchTerm}`;
         }
@@ -222,8 +283,30 @@ class KitePaintApi {
             error('Failed to get users');
             return Promise.reject();
         });
-        const transformedUsers = response.data.map(transformUser);
-        return transformedUsers;
+        // Older API deployments return a bare array instead of { data, total }.
+        const rows = Array.isArray(response.data) ? response.data : response.data.data;
+        const total = Array.isArray(response.data) ? rows.length : response.data.total;
+        return {
+            users: rows.map(transformUser),
+            total,
+        };
+    }
+
+    /**
+     * Finds users whose loginid is exactly the term or whose username contains it.
+     * @param {String} term
+     * @param {Number} [limit]
+     * @return {Promise<User[]>}
+     */
+    async searchUsers(term, limit = 20) {
+        const path = `/users.php?return%5B%5D=loginid&return%5B%5D=username&limit=${limit}&search=${encodeURIComponent(
+            term
+        )}`;
+        const response = await this.axiosInstance.get(path).catch(() => {
+            error('Failed to search users');
+            return Promise.reject();
+        });
+        return response.data.map(transformUser);
     }
 
     async updateUser(user) {
