@@ -153,9 +153,9 @@ const Dashboard = () => {
                                         value={designStats.created30}
                                     />
                                     <Stat
-                                        testId="stat-designs-created60"
-                                        label="Created in the last 60 days"
-                                        value={designStats.created60}
+                                        testId="stat-designs-createdYear"
+                                        label="Created in the last year"
+                                        value={designStats.createdYear}
                                     />
                                 </StatGrid>
                                 <SectionHeader>
