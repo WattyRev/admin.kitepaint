@@ -3,7 +3,6 @@ import styled from 'styled-components';
 import {
     PageLoader,
     Table,
-    TableCell,
     TableHeading,
     TableRow,
     Select,
@@ -14,24 +13,15 @@ import {
 } from 'react-watty-ui';
 import PageWrapper from './ui/PageWrapper';
 import SearchWrapper from './ui/SearchWrapper';
-import getDesignViewUrl from '../constants/getDesignViewUrl';
-import { formatNameWithId } from '../models/Design';
 import DesignsData from './designs/Data';
 import DesignsEdit from './designs/Edit';
+import DesignsRow from './designs/Row';
 import Pagination from './ui/Pagination';
 
 const SortButton = styled(TextButton)`
     font-weight: inherit;
     color: inherit;
 `;
-
-const ViewLink = styled(TextButton)`
-    margin-left: 12px;
-    text-decoration: none;
-`;
-
-// Private designs can't be seen on the public site, so they don't get a view link.
-const VIEWABLE_STATUSES = ['Public', 'Unlisted'];
 
 const Designs = () => {
     const [editedDesign, setEditedDesign] = useState(null);
@@ -122,53 +112,11 @@ const Designs = () => {
                                     </thead>
                                     <tbody>
                                         {designs.map(design => (
-                                            <TableRow
-                                                data-testid="design-row"
+                                            <DesignsRow
                                                 key={design.get('id')}
-                                            >
-                                                <TableCell>{design.get('id')}</TableCell>
-                                                <TableCell>{design.get('name')}</TableCell>
-                                                <TableCell>{design.get('updated')}</TableCell>
-                                                <TableCell>{design.get('created')}</TableCell>
-                                                <TableCell>{design.get('status')}</TableCell>
-                                                <TableCell>
-                                                    {formatNameWithId(
-                                                        design.get('username'),
-                                                        design.get('user')
-                                                    )}
-                                                </TableCell>
-                                                <TableCell>
-                                                    {formatNameWithId(
-                                                        design.get('productName'),
-                                                        design.get('product')
-                                                    )}
-                                                </TableCell>
-                                                <TableCell>
-                                                    {design.get('active') ? 'True' : 'False'}
-                                                </TableCell>
-                                                <TableCell>
-                                                    <TextButton
-                                                        onClick={() => setEditedDesign(design)}
-                                                    >
-                                                        Edit
-                                                    </TextButton>
-                                                    {VIEWABLE_STATUSES.includes(
-                                                        design.get('status')
-                                                    ) && (
-                                                        <ViewLink
-                                                            as="a"
-                                                            data-testid="view-link"
-                                                            href={getDesignViewUrl(
-                                                                design.get('id')
-                                                            )}
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                        >
-                                                            View
-                                                        </ViewLink>
-                                                    )}
-                                                </TableCell>
-                                            </TableRow>
+                                                design={design}
+                                                onEdit={setEditedDesign}
+                                            />
                                         ))}
                                     </tbody>
                                 </Table>

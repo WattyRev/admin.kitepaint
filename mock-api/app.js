@@ -36,6 +36,25 @@ app.get('/api/ping.php', (request, response) => {
     response.json({ message: 'pong' });
 });
 
+app.get('/api/stats.php', (request, response) => {
+    const DAY = 24 * 60 * 60 * 1000;
+    const now = Date.now();
+    const countSince = (rows, column, days) =>
+        rows.filter(row => now - new Date(row[column]).getTime() <= days * DAY).length;
+    response.json({
+        users: {
+            total: users.length,
+            active30: countSince(users, 'last_login', 30),
+            active365: countSince(users, 'last_login', 365),
+        },
+        designs: {
+            total: designs.length,
+            created30: countSince(designs, 'created', 30),
+            created60: countSince(designs, 'created', 60),
+        },
+    });
+});
+
 app.get('/api/designs.php', (request, response) => {
     const { query } = request;
     // Add the owner's username and the product's name, like the real API does.

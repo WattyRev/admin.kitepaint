@@ -62,6 +62,19 @@ class KitePaintApi {
     }
 
     /**
+     * Gets the counts shown on the dashboard.
+     * @return {Promise<Object>} Counts: users {total, active30, active365} and designs {total,
+     * created30, created60}
+     */
+    async getDashboardStats() {
+        const response = await this.axiosInstance.get('/stats.php').catch(() => {
+            error('Failed to get dashboard stats');
+            return Promise.reject();
+        });
+        return response.data;
+    }
+
+    /**
      * Gets one page of designs.
      * @param {Object} options
      * @param {String} [options.searchTerm]
