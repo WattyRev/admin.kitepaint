@@ -80,7 +80,9 @@ const VariationsField = ({ variations, onChange }) => (
                 onChange([
                     ...variations,
                     {
+                        // The id is only a client-side key until the variation is saved
                         id: generateId(),
+                        isNew: true,
                         name: '',
                         sortIndex: variations.length,
                         svg: '',
@@ -97,6 +99,7 @@ VariationsField.propTypes = {
     variations: PropTypes.arrayOf(
         PropTypes.shape({
             id: PropTypes.string,
+            isNew: PropTypes.bool,
             name: PropTypes.string,
             sortIndex: PropTypes.number,
             svg: PropTypes.string,

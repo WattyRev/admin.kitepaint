@@ -244,6 +244,7 @@ describe('Products', () => {
             variations: [
                 {
                     id: 'generated-id',
+                    isNew: true,
                     name: 'Booger',
                     svg: '<div>Booger</div>',
                     sortIndex: 0,
@@ -302,6 +303,29 @@ describe('Products', () => {
         const savedProduct = api.createProduct.mock.calls[0][0];
         const submittedValues = savedProduct.getProperties(...Object.keys(newValues));
         expect(submittedValues).toStrictEqual(newValues);
+    });
+
+    describe('variations', () => {
+        it('only sends ids for variations that have already been saved', () => {
+            expect.assertions(1);
+            const product = transformProduct({
+                ...mockProducts[0],
+                variations: [
+                    { id: '12', name: 'Saved', svg: '<a/>', sortIndex: 0 },
+                    {
+                        id: 'generated-id',
+                        isNew: true,
+                        name: 'Unsaved',
+                        svg: '<b/>',
+                        sortIndex: 1,
+                    },
+                ],
+            });
+            expect(JSON.parse(product.buildPayload().variations)).toStrictEqual([
+                { id: '12', name: 'Saved', svg: '<a/>', sortIndex: 0 },
+                { name: 'Unsaved', svg: '<b/>', sortIndex: 1 },
+            ]);
+        });
     });
 
     describe('colors', () => {
