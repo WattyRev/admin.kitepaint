@@ -62,7 +62,7 @@ app.get('/api/stats.php', (request, response) => {
         designs: {
             total: designs.length,
             created30: countSince(designs, 'created', 30),
-            created60: countSince(designs, 'created', 60),
+            createdYear: countSince(designs, 'created', 365),
         },
     });
 });

@@ -39,7 +39,7 @@ describe('Dashboard', () => {
         jest.clearAllMocks();
         api.getDashboardStats.mockResolvedValue({
             users: { total: 1200, active30: 34, active365: 560 },
-            designs: { total: 4321, created30: 12, created60: 25 },
+            designs: { total: 4321, created30: 12, createdYear: 25 },
         });
         api.getUsers.mockResolvedValue({
             users: mockUsers.slice(0, 2).map(transformUser),
@@ -70,7 +70,7 @@ describe('Dashboard', () => {
         expect((await findByTestId('stat-users-active30-value')).textContent).toBe('34');
         expect((await findByTestId('stat-users-active365-value')).textContent).toBe('560');
         expect((await findByTestId('stat-designs-total-value')).textContent).toBe('4,321');
-        expect((await findByTestId('stat-designs-created60-value')).textContent).toBe('25');
+        expect((await findByTestId('stat-designs-createdYear-value')).textContent).toBe('25');
     });
 
     it('requests the five most recent users and designs', async () => {
