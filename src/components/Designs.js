@@ -14,6 +14,7 @@ import {
 } from 'react-watty-ui';
 import PageWrapper from './ui/PageWrapper';
 import SearchWrapper from './ui/SearchWrapper';
+import getDesignViewUrl from '../constants/getDesignViewUrl';
 import { formatNameWithId } from '../models/Design';
 import DesignsData from './designs/Data';
 import DesignsEdit from './designs/Edit';
@@ -23,6 +24,14 @@ const SortButton = styled(TextButton)`
     font-weight: inherit;
     color: inherit;
 `;
+
+const ViewLink = styled(TextButton)`
+    margin-left: 12px;
+    text-decoration: none;
+`;
+
+// Private designs can't be seen on the public site, so they don't get a view link.
+const VIEWABLE_STATUSES = ['Public', 'Unlisted'];
 
 const Designs = () => {
     const [editedDesign, setEditedDesign] = useState(null);
@@ -143,6 +152,21 @@ const Designs = () => {
                                                     >
                                                         Edit
                                                     </TextButton>
+                                                    {VIEWABLE_STATUSES.includes(
+                                                        design.get('status')
+                                                    ) && (
+                                                        <ViewLink
+                                                            as="a"
+                                                            data-testid="view-link"
+                                                            href={getDesignViewUrl(
+                                                                design.get('id')
+                                                            )}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                        >
+                                                            View
+                                                        </ViewLink>
+                                                    )}
                                                 </TableCell>
                                             </TableRow>
                                         ))}

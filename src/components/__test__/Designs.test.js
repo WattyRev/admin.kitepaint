@@ -214,6 +214,31 @@ describe('Designs', () => {
             expect(getByText('12')).toBeInTheDocument();
             expect(getByText('3')).toBeInTheDocument();
         });
+        it.each(['Public', 'Unlisted'])('links to view %s designs', status => {
+            expect.assertions(3);
+            designsDataResponse.designs = [new Design({ id: '1348', name: 'boogers', status })];
+            const { getByTestId } = renderWithTheme(<Designs />);
+            const link = getByTestId('view-link');
+            expect(link).toHaveAttribute('href', expect.stringMatching(/\/view\/1348$/));
+            expect(link).toHaveAttribute('target', '_blank');
+            expect(link).toHaveTextContent('View');
+        });
+        it('puts the view link after the edit button', () => {
+            expect.assertions(1);
+            designsDataResponse.designs = [
+                new Design({ id: '1348', name: 'boogers', status: 'Public' }),
+            ];
+            const { getByText } = renderWithTheme(<Designs />);
+            expect(getByText('Edit').nextElementSibling).toBe(getByText('View'));
+        });
+        it('does not link to view private designs', () => {
+            expect.assertions(1);
+            designsDataResponse.designs = [
+                new Design({ id: '1348', name: 'boogers', status: 'Private' }),
+            ];
+            const { queryByTestId } = renderWithTheme(<Designs />);
+            expect(queryByTestId('view-link')).toBeNull();
+        });
         it('displays active as true', () => {
             expect.assertions(2);
             designsDataResponse.designs = [
